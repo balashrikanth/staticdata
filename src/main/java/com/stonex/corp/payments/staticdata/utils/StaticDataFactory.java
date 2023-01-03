@@ -1,0 +1,92 @@
+package com.stonex.corp.payments.staticdata.utils;
+
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.model.Audit;
+import com.stonex.corp.payments.staticdata.model.StaticData;
+import com.stonex.corp.payments.staticdata.model.StaticDataWithAudit;
+import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.bson.Document;
+import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Component
+public class StaticDataFactory {
+
+    private String functionId;
+    private String content;//Json String from URL;
+    private StaticData staticData;
+    private String className;
+
+
+    public StaticDataFactory(String functionId, String content){
+        this.functionId = functionId;
+        this.content = content;
+        this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            Class<?> staticDataDBClass = classLoader.loadClass(this.className);
+            Constructor<?> constructor = staticDataDBClass.getConstructor();
+            this.staticData = (StaticData) constructor.newInstance();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String getCollectionName(){
+        return this.staticData.getCollectionName();
+    }
+    public String getPKValue(){
+        return this.staticData.createPK(content);
+    }
+
+    public ArrayList<String> getJSONFromDocument(List<Document> documentList){
+        ArrayList<String> stringArrayList = new ArrayList<String>();
+        for (Document d :documentList){
+            String s = staticData.getJSONString(d);
+            stringArrayList.add(s);
+        }
+        return stringArrayList;
+    }
+
+    public Object getObjectFromDocument(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, Document document){
+        StaticData staticData1 = staticData.getObjectFromDocument(document);
+        Audit audit = new Audit();
+        try {
+             audit = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticData1.getPK()).getLastAudit();
+            StaticDataWithAudit staticDataWithAudit = new StaticDataWithAudit(staticData1,audit);
+            return staticDataWithAudit;
+        } catch (Exception e){
+            e.printStackTrace();
+            return staticData1;
+        }
+    }
+
+    public Object getObjectFromDocument(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, List<Document> documentList){
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        for (Document d : documentList){
+            StaticData staticData1 = staticData.getObjectFromDocument(d);
+            Audit audit = new Audit();
+            try {
+                audit = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticData1.getPK()).getLastAudit();
+                StaticDataWithAudit staticDataWithAudit = new StaticDataWithAudit(staticData1,audit);
+                objectArrayList.add(staticDataWithAudit);
+            } catch (Exception e){
+                //If no audit skip it
+                e.printStackTrace();
+                objectArrayList.add(staticData1);
+            }
+
+        }
+        return objectArrayList;
+    }
+
+}
