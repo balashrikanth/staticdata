@@ -1,7 +1,9 @@
 package com.stonex.corp.payments.staticdata.utils;
 
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.model.Audit;
+import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import com.stonex.corp.payments.staticdata.model.StaticDataWithAudit;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
@@ -70,23 +72,28 @@ public class StaticDataFactory {
         }
     }
 
-    public Object getObjectFromDocument(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, List<Document> documentList){
+    public Object getObjectFromDocumentList(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, List<Document> documentList){
         ArrayList<Object> objectArrayList = new ArrayList<>();
         for (Document d : documentList){
-            StaticData staticData1 = staticData.getObjectFromDocument(d);
-            Audit audit = new Audit();
-            try {
-                audit = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticData1.getPK()).getLastAudit();
-                StaticDataWithAudit staticDataWithAudit = new StaticDataWithAudit(staticData1,audit);
-                objectArrayList.add(staticDataWithAudit);
-            } catch (Exception e){
-                //If no audit skip it
-                e.printStackTrace();
-                objectArrayList.add(staticData1);
-            }
-
+            objectArrayList.add(getObjectFromDocument(staticDataMetaInfoDBRepository,d));
         }
         return objectArrayList;
+    }
+
+    public Picklist getPickListHeaders(){
+        return this.staticData.getPickListHeaders();
+    }
+
+    public List<String[]> getPickListFromDocument(List<Document> documentList){
+        ArrayList<String[]> stringArrayList = new ArrayList<String[]>();
+        //instantiate a picklist
+        for (Document d : documentList){
+            stringArrayList.add(this.staticData.getPickListRow(d));
+        }
+        return stringArrayList;
+    }
+    public List<AppError> fieldValidate(String content){
+        return this.staticData.fieldValidate(content);
     }
 
 }

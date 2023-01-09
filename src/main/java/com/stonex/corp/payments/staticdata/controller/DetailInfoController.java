@@ -10,10 +10,14 @@ import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBReposi
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
+
 @RequestMapping("/detail")
 public class DetailInfoController {
 
@@ -26,23 +30,29 @@ public class DetailInfoController {
     public String createNew(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        Document docapproved = staticDataDAL.findRecord(true,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
-        Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
-        //Create Unapproved only if not found in Approved and Unapproved Collections
-        if (docapproved==null && docunapproved==null){
-            Document d = staticDataDAL.createUnapproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(),jsonContent);
-            StaticDataMetaInfoDB staticDataMetaInfoDB = new StaticDataMetaInfoDB(jsonContent,  functionId, userId, SystemFieldConfig.ACTIONNEW);
-            staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB);
-            appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,d));
+        List<AppError> appErrorList = staticDataFactory.fieldValidate(jsonContent);
+        if (appErrorList.size()==0){
+            Document docapproved = staticDataDAL.findRecord(true,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
+            Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
+            //Create Unapproved only if not found in Approved and Unapproved Collections
+            if (docapproved==null && docunapproved==null){
+                Document d = staticDataDAL.createUnapproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(),jsonContent);
+                StaticDataMetaInfoDB staticDataMetaInfoDB = new StaticDataMetaInfoDB(jsonContent,  functionId, userId, SystemFieldConfig.ACTIONNEW);
+                staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB);
+                appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,d));
+            } else {
+                AppError appError = new AppError("EN0001","Record Key Already Exists as Unapproved or Approved","E");
+                appReturnObject.setReturncode(false);
+                appReturnObject.addError(appError);
+            }
         } else {
-            AppError appError = new AppError("EN0001","Record Key Already Exists as Unapproved or Approved","E");
-            appReturnObject.setReturncode(false);
-            appReturnObject.addError(appError);
+            appReturnObject.addAllError(appErrorList);
         }
         return appReturnObject.setReturnJSON();
+
     }
 
-    @GetMapping("editableRecord")
+    @PostMapping("editableRecord")
     public String getEditable(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
@@ -50,7 +60,7 @@ public class DetailInfoController {
         Document docunapproved = staticDataDAL.getRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         if (docunapproved!=null){
             appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,docunapproved));
-        } else if (docunapproved == null && docapproved!=null){
+        } else if (docapproved!=null){
             appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,docapproved));
         } else {
             AppError appError = new AppError("EN0003","Record Key Does not exist as Approved or Unapproved","E");
@@ -65,16 +75,21 @@ public class DetailInfoController {
     public String edit( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        Document d = staticDataDAL.editUnapproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(),jsonContent);
-        StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticDataFactory.getPKValue());
-        if (staticDataMetaInfoDB ==null){
-            StaticDataMetaInfoDB staticDataMetaInfoDB1 = new StaticDataMetaInfoDB( jsonContent,  functionId, userId, SystemFieldConfig.ACTIONEDIT);
-            staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB1);
+        List<AppError> appErrorList = staticDataFactory.fieldValidate(jsonContent);
+        if (appErrorList.size()==0){
+            Document d = staticDataDAL.editUnapproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(),jsonContent);
+            StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticDataFactory.getPKValue());
+            if (staticDataMetaInfoDB ==null){
+                StaticDataMetaInfoDB staticDataMetaInfoDB1 = new StaticDataMetaInfoDB( jsonContent,  functionId, userId, SystemFieldConfig.ACTIONEDIT);
+                staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB1);
+            } else {
+                staticDataMetaInfoDB.update(userId,SystemFieldConfig.ACTIONEDIT,"");
+                staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB);
+            }
+            appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,d));
         } else {
-            staticDataMetaInfoDB.update(userId,SystemFieldConfig.ACTIONEDIT,"");
-            staticDataMetaInfoDBRepository.save(staticDataMetaInfoDB);
+            appReturnObject.addAllError(appErrorList);
         }
-        appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,d));
         return appReturnObject.setReturnJSON();
     }
 
@@ -133,7 +148,7 @@ public class DetailInfoController {
             } else {
                 //remove the unapproved record as now it will need to move to approved
                 boolean result = staticDataDAL.undo(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
-                if (result = true){
+                if (result){
                     if (staticDataMetaInfoDB !=null && staticDataMetaInfoDB.getLastAudit().getAction().equalsIgnoreCase(SystemFieldConfig.ACTIONDELETE)){
                         //If it was an approval for Delete then the main record itself should go away
                         boolean returnValue = staticDataDAL.removeApproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(),jsonContent);
@@ -156,5 +171,6 @@ public class DetailInfoController {
         }
         return appReturnObject.setReturnJSON();
     }
+
 
 }

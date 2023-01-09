@@ -1,7 +1,9 @@
 package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.Address;
+import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.bson.Document;
 
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -61,5 +62,30 @@ public class Entity extends StaticData {
             e.printStackTrace();
         }
         return entity;
+    }
+    @Override
+    public Picklist getPickListHeaders(){
+        Picklist picklist = new Picklist();
+        picklist.setNoOfCols(3);//As set below
+        String [] headers = new String[3];
+        headers[0] = "code";
+        headers[1] = "displayname";
+        headers[2] = "fullname";
+        picklist.setPickListHeaders(headers);
+        return picklist;
+    }
+    @Override
+    public String[] getPickListRow(Document document){
+        String [] picklistcols = new String[]{"NA","NA","NA"};
+        if (document.get("code")!=null){
+            picklistcols[0] = document.get("code").toString();
+        }
+        if (document.get("displayname")!=null){
+            picklistcols[1] = document.get("displayname").toString();
+        }
+        if (document.get("fullname")!=null){
+            picklistcols[2] = document.get("fullname").toString();
+        }
+        return picklistcols;
     }
 }

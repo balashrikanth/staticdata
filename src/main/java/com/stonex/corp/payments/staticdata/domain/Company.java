@@ -1,14 +1,14 @@
 package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.Address;
+import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
-
-import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class Company extends StaticData {
     private String shortname;
     private String entity;
     private String companytype;
-    private String accoutntype;
+    private String accounttype;
     private String relationshiptype;
     private String owneremail;
     private String fullname;
@@ -67,5 +67,41 @@ public class Company extends StaticData {
         }
         return company;
     }
+
+    @Override
+    public Picklist getPickListHeaders(){
+        Picklist picklist = new Picklist();
+        picklist.setNoOfCols(5);//As set below
+        String [] headers = new String[5];
+        headers[0] = "ctptid";
+        headers[1] = "shortname";
+        headers[2] = "entity";
+        headers[3] = "companytype";
+        headers[4] = "accounttype";
+        picklist.setPickListHeaders(headers);
+        return picklist;
+    }
+    @Override
+    public String[] getPickListRow(Document document){
+        String [] picklistcols = new String[]{"NA","NA","NA","NA","NA"};
+        if (document.get("ctptid")!=null){
+            picklistcols[0] = document.get("ctptid").toString();
+        }
+        if (document.get("shortname")!=null){
+            picklistcols[1] = document.get("shortname").toString();
+        }
+        if (document.get("entity")!=null){
+            picklistcols[2] = document.get("entity").toString();
+        }
+        if (document.get("companytype")!=null){
+            picklistcols[3] = document.get("companytype").toString();
+        }
+        if (document.get("accounttype")!=null){
+            picklistcols[4] = document.get("accounttype").toString();
+        }
+        return picklistcols;
+    }
+
+
 
 }
