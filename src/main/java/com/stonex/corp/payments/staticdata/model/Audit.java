@@ -17,6 +17,7 @@ public class Audit {
     private long approvedDate;
     private String approveRemark;
     private String action; // Create / Update/Modify ..
+    private int version;//this relates to
 
     public Audit(String userId, String action){
         this.creatorId = userId;

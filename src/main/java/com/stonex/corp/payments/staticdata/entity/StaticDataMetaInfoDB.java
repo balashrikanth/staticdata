@@ -34,13 +34,18 @@ public class StaticDataMetaInfoDB {
         this.collectionName = staticDataFactory.getCollectionName();
         this.className = staticDataFactory.getClassName();
         this.approved = false;//Initial Status is always false
+        this.version=1;
         this.lastAudit = new Audit(userId, action);
+        this.lastAudit.setVersion(this.version);
         this.auditInfoList = new ArrayList<Audit>();
         this.auditInfoList.add(this.lastAudit);
         this.status=SystemFieldConfig.ACTIONNEW;//First Time NEW
 
+
+
     }
     public void update(String userId,String action, String approveRemark ){
+        this.version++;
         switch(action.toUpperCase()) {
             case SystemFieldConfig.ACTIONAPPROVE:
                 this.lastAudit.addApprover(userId,approveRemark);
@@ -51,6 +56,7 @@ public class StaticDataMetaInfoDB {
                 this.approved=false;
                 break;
         }
+        this.lastAudit.setVersion(this.version);
         this.auditInfoList.add(this.lastAudit);
         this.status=action;
     }

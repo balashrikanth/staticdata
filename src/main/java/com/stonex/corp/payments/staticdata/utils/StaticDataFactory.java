@@ -92,7 +92,7 @@ public class StaticDataFactory {
         }
         return stringArrayList;
     }
-    public List<AppError> fieldValidate(String content){
+    public AppError fieldValidate(String content){
         return this.staticData.fieldValidate(content);
     }
 

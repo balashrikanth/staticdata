@@ -1,9 +1,6 @@
 package com.stonex.corp.payments.staticdata.dto;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.io.CharacterEscapes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.stonex.corp.payments.staticdata.error.AppError;
@@ -17,25 +14,29 @@ import java.util.List;
 public class AppReturnObject {
     private boolean returncode;
     private String data;
-    private List<AppError> appErrors = null;
+    private AppError appError;
+    //private List<AppError> appErrors = null;
 
     public AppReturnObject(){
         this.returncode = false;
         this.data = "\"No Data\"";
-        this.appErrors = new ArrayList<AppError>();
+        this.appError = new AppError();
+        //this.appErrors = new ArrayList<AppError>();
     }
 
     public AppReturnObject(boolean returncode, String data) {
         this.returncode = returncode;
         this.data = data;
-        this.appErrors = new ArrayList<AppError>();
+        this.appError = new AppError();
+        //this.appErrors = new ArrayList<AppError>();
     }
 
     public AppReturnObject(boolean returncode, String data, AppError appError) {
         this.returncode = returncode;
         this.data = data;
         if (appError != null)
-            this.appErrors.add(appError);
+            this.appError = appError;
+            //this.appErrors.add(appError);
     }
 
 
@@ -43,7 +44,8 @@ public class AppReturnObject {
 
         ObjectMapper mapper = new ObjectMapper();
        this.setReturncode(true);
-        this.appErrors = new ArrayList<>();
+       this.appError = new AppError();
+        //this.appErrors = new ArrayList<>();
         String jsonString;
 
         try {
@@ -55,8 +57,9 @@ public class AppReturnObject {
             e.printStackTrace();
             setReturncode(false);
             setData("\"\"");
-            AppError appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
-            this.appErrors.add(appError);
+            this.appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
+
+            //this.appErrors.add(appError);
         }
     }
 
@@ -65,7 +68,8 @@ public class AppReturnObject {
         ObjectMapper mapper = new ObjectMapper();
         mapper.getFactory().setCharacterEscapes(new CustomCharacterEscapes());
         this.setReturncode(true);
-        this.appErrors = new ArrayList<>();
+        this.appError = new AppError();
+        //this.appErrors = new ArrayList<>();
         String jsonString;
         try {
 
@@ -77,31 +81,54 @@ public class AppReturnObject {
             e.printStackTrace();
             setReturncode(false);
             setData("\"\"");
-            AppError appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
-            this.appErrors.add(appError);
+            this.appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
+            //this.appErrors.add(appError);
         }
     }
 
     public void addError(AppError appError){
         setReturncode(false);
-        this.appErrors.add(appError);
+        this.appError = appError;
+        //this.appErrors.add(appError);
 
     }
 
-    public void addAllError(List<AppError> appError){
+    /*public void addAllError(List<AppError> appError){
         setReturncode(false);
         setData("\"\"");
-        this.appErrors.addAll(appError);
+        this.appError = appError.get(0);
+        //this.appErrors.addAll(appError);
 
+    }*
+
+     */
+
+    public String setReturnJSON(){
+        String jsonString="";
+        String errorjson = "\"error\":[";
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.getFactory().setCharacterEscapes(new CustomCharacterEscapes());
+        try {
+            jsonString = mapper.writeValueAsString(this.appError);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            this.appError = new AppError("EE9998","Unexpected Error Preparing error response","S","en") ;
+            //this.appErrors.add(appError);
+        }
+        errorjson=errorjson+jsonString+"]";
+        String s = "{\"returncode\":" + returncode + "," + "\"data\":" + data + "," + errorjson + "}";
+        return s;
     }
 
+    /*
     public String setReturnJSON(){
 
         // error is an array list now
         String errorjson = "\"errors\":[";
         int nooferrors = this.appErrors.size();
         for (int i=0; i<nooferrors; i++){
-            errorjson = errorjson+"{\"errorcode\":\""+appErrors.get(i).getErrorCode()+"\","+"\"errormsg\":\""+appErrors.get(i).getErrorDesc()+"\"}";
+            errorjson = errorjson+"{\"errorcode\":\""+appErrors.get(i).getCode()+"\","+"\"errormsg\":\""+appErrors.get(i).getMessage()+"\"}";
             if (nooferrors>1 && i <(nooferrors-1)) {
                 errorjson = errorjson +",";
             }
@@ -112,5 +139,7 @@ public class AppReturnObject {
         return s;
 
     }
+
+     */
 
 }

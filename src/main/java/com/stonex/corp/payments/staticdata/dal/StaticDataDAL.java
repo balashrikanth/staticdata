@@ -14,6 +14,7 @@ public interface StaticDataDAL {
     public Document createUnapproved(String collectionName,  String staticDataPK, String content);
     public Document createApproved(String collectionName, String staticDataPK, String content);
     public Document editUnapproved(String collectionName,  String staticDataPK, String content);
+    public Document editApproved(String collectionName,  String staticDataPK, String content);
     public boolean undo(String collectionName,  String staticDataPK);
     public Document deleteApproved(String collectionName,  String staticDataPK, String content);
     public boolean removeApproved(String collectionName,  String staticDataPK, String content);

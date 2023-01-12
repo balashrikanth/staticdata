@@ -42,8 +42,8 @@ public class StaticData {
         return new String[SystemFieldConfig.PICKLISTCOLS];
     }
 
-    public List<AppError> fieldValidate(String content){
-        return new ArrayList<AppError>();
+    public AppError fieldValidate(String content){
+        return new AppError();
     }
 
 }

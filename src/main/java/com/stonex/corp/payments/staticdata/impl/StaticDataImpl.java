@@ -182,7 +182,33 @@ public class StaticDataImpl implements StaticDataDAL {
         }
         return document;
     }
-    
+
+    @Override
+    public Document editApproved(String collectionName, String staticDataPK, String content) {
+        Document document = new Document();
+        try {
+            //First Remove Old Unapproved
+            Query query = new Query();
+            query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
+            mongoTemplate.remove(query,collectionName.concat("_unapproved"));
+            //Removed Old Approved
+            //First Remove Old Unapproved
+            Query query1 = new Query();
+            query1.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
+            mongoTemplate.remove(query1,collectionName);
+            //Create New with new values replacing old
+            Document document1 = Document.parse(content);
+            document1.append("staticDataPK",staticDataPK);
+            document = mongoTemplate.insert(document1,collectionName);
+            document.remove("staticDataPK");
+            document.remove("_id");
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return document;
+    }
+
 
     @Override
     public boolean undo(String collectionName,  String staticDataPK){
