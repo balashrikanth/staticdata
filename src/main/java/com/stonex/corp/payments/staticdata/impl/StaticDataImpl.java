@@ -129,6 +129,25 @@ public class StaticDataImpl implements StaticDataDAL {
     }
 
     @Override
+    public long getCount(boolean approved, String collectionName) {
+        long counter = 0 ;
+        if (!approved){
+            collectionName = collectionName.concat("_unapproved");
+        }
+
+        List<Document> aggregateDocList = new ArrayList<Document>();
+        List<Document> resultDocumentList = new ArrayList<Document>();
+        try {
+            MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
+            counter = collection.countDocuments();
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return counter;
+    }
+
+    @Override
     public Document createUnapproved(String collectionName,  String staticDataPK, String content){
         Document document = new Document();
         try {

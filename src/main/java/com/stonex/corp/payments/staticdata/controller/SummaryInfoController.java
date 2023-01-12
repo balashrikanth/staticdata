@@ -40,5 +40,14 @@ public class SummaryInfoController {
 
     }
 
+    @GetMapping("/count/function/{function}/approved/{approved}")
+    public long getRecordCount(@PathVariable("function") String functionId, @PathVariable("approved") boolean approved){
+        AppReturnObject appReturnObject = new AppReturnObject();
+        long counter=0;
+        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,"");
+        counter = staticDataDAL.getCount(approved,staticDataFactory.getCollectionName());
+        return counter;
+
+    }
 
 }

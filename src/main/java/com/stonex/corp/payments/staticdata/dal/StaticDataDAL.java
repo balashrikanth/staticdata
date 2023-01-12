@@ -11,6 +11,7 @@ public interface StaticDataDAL {
     public List<Document> getFiltered(boolean approved, String collectionName,  String filterJSONString);
     public List<Document> getFilteredPartialApproved(String collectionName,  String filterJSONString);
     public List<Document> getAll(boolean approved, String collectionName);
+    public long getCount(boolean approved, String collectionName);
     public Document createUnapproved(String collectionName,  String staticDataPK, String content);
     public Document createApproved(String collectionName, String staticDataPK, String content);
     public Document editUnapproved(String collectionName,  String staticDataPK, String content);
