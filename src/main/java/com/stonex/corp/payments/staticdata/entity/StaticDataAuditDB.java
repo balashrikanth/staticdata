@@ -71,7 +71,7 @@ public class StaticDataAuditDB {
                 changeInfo.setNewValue(jsonObject.get(s).toString());
             }
             if (changeInfo.getOldValue()!=null && changeInfo.getNewValue()!=null){
-                if (changeInfo.getOldValue()!=changeInfo.getNewValue()){
+                if (!changeInfo.getOldValue().equalsIgnoreCase(changeInfo.getNewValue())){
                     changeInfo.setDifference(true);
                 }
             }
