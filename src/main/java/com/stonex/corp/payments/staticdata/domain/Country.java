@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.error.ErrorItem;
+import com.stonex.corp.payments.staticdata.model.ChangeInfo;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class Country extends StaticData {
         }
         return returnValue;
     }
+
     @Override
     public String getPK(){
         return this.code;
@@ -62,6 +64,8 @@ public class Country extends StaticData {
         }
         return country;
     }
+
+
 
     @Override
     public Picklist getPickListHeaders(){
@@ -87,6 +91,12 @@ public class Country extends StaticData {
             picklistcols[2] = document.get("fullname").toString();
         }
         return picklistcols;
+    }
+
+    @Override
+    public String[] getLabels(){
+        String [] stringList = new String[]{"code","fullname","displayname","isocode","isonumericcode","phonecode"};
+        return stringList;
     }
 
     @Override

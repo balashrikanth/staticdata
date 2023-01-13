@@ -72,6 +72,7 @@ public class StaticDataFactory {
         }
     }
 
+
     public Object getObjectFromDocumentList(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, List<Document> documentList){
         ArrayList<Object> objectArrayList = new ArrayList<>();
         for (Document d : documentList){
@@ -91,6 +92,10 @@ public class StaticDataFactory {
             stringArrayList.add(this.staticData.getPickListRow(d));
         }
         return stringArrayList;
+    }
+
+    public String[] getLabels(){
+        return this.staticData.getLabels();
     }
     public AppError fieldValidate(String content){
         return this.staticData.fieldValidate(content);

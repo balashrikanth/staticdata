@@ -7,8 +7,7 @@ import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class StaticData {
@@ -27,6 +26,8 @@ public class StaticData {
         return "";
     }
 
+
+
     public StaticData getObjectFromDocument(Document document){
         StaticData staticData = new StaticData();
 
@@ -42,6 +43,10 @@ public class StaticData {
         return new String[SystemFieldConfig.PICKLISTCOLS];
     }
 
+    public String[] getLabels(){
+        String [] stringList = new String[10];
+        return stringList;
+    }
     public AppError fieldValidate(String content){
         return new AppError();
     }

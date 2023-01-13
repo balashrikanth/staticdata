@@ -5,6 +5,7 @@ import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 
+import com.stonex.corp.payments.staticdata.model.ChangeInfo;
 import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepository;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
@@ -40,7 +41,8 @@ public class AuditController {
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         StaticDataAuditDB staticDataAuditDB = this.staticDataAuditDBRepository.findFirstByStaticDataPKAndCollectionNameAndVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),version);
-        appReturnObject.PerformReturnObject(staticDataAuditDB);
+        List<ChangeInfo> changeInfoList = staticDataAuditDB.getChangeInfo(staticDataFactory.getLabels());
+        appReturnObject.PerformReturnObject(changeInfoList);
         return appReturnObject.setReturnJSON();
     }
 }
