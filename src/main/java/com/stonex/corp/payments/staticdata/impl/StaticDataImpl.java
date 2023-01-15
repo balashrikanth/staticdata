@@ -5,6 +5,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
+import org.bson.BsonBoolean;
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -115,6 +118,31 @@ public class StaticDataImpl implements StaticDataDAL {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
 
             FindIterable<Document> resultDocument = collection.find();
+            for (Document d : resultDocument ){
+                if (d!=null){
+                    d.remove("staticDataPK");
+                    d.remove("_id");
+                }
+                resultDocumentList.add(d);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return resultDocumentList;
+    }
+
+    @Override
+    public List<Document> getAllActive(boolean approved, String collectionName) {
+        if (!approved){
+            collectionName = collectionName.concat("_unapproved");
+        }
+
+        List<Document> aggregateDocList = new ArrayList<Document>();
+        List<Document> resultDocumentList = new ArrayList<Document>();
+        try {
+            MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
+            FindIterable<Document> resultDocument = collection.find(new Document("$match",
+                    new Document("active", true)));
             for (Document d : resultDocument ){
                 if (d!=null){
                     d.remove("staticDataPK");

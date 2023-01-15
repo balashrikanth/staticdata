@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "static-validation")
+@Document(collection = "staticdata-validation")
 public class EntityValidationRulesDB {
     private String functionid;
     private String allowduplicate;

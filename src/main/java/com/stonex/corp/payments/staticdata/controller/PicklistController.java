@@ -27,7 +27,7 @@ public class PicklistController {
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         //get all Approved
-        List<Document> documentList = staticDataDAL.getAll(true,staticDataFactory.getCollectionName());
+        List<Document> documentList = staticDataDAL.getAllActive(true,staticDataFactory.getCollectionName());
         Picklist picklist = staticDataFactory.getPickListHeaders();
         picklist.addRows(staticDataFactory.getPickListFromDocument(documentList));
         appReturnObject.PerformReturnArrayObject(picklist);

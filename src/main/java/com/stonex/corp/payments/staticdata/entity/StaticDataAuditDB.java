@@ -64,7 +64,7 @@ public class StaticDataAuditDB {
             changeInfo.setFieldName(s);
             if (this.oldcontent!=null){
                 JSONObject jsonObject = new JSONObject((this.oldcontent));
-                changeInfo.setOldValue(jsonObject.getString(s));
+                changeInfo.setOldValue(jsonObject.get(s).toString());
             }
             if (this.newcontent!=null){
                 JSONObject jsonObject = new JSONObject((this.newcontent));

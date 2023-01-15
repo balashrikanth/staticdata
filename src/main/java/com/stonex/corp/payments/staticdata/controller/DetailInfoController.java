@@ -369,7 +369,7 @@ public class DetailInfoController {
                             switch(fieldAttributes.getDataconstraint().trim().toUpperCase()){
                                 case "ALPHABET":
                                     if (o!=null){
-                                        if (o.toString().matches("^[a-zA-Z]*$")){
+                                        if (o.toString().matches("^[a-zA-Z\\s]*$")){
                                             dataTypeError = false;
                                         } else {
                                             dataTypeError = true;
@@ -378,7 +378,7 @@ public class DetailInfoController {
                                     break;
                                 case "ALPHANUMERIC":
                                     if (o!=null){
-                                        if (o.toString().matches("^[a-zA-Z0-9]*$")){
+                                        if (o.toString().matches("^[a-zA-Z0-9\\s]*$")){
                                             dataTypeError = false;
                                         } else {
                                             dataTypeError = true;
@@ -483,67 +483,7 @@ public class DetailInfoController {
 
             }
 
-            /*
-            ObjectMapper objectMapper = new ObjectMapper();
-            Country country = objectMapper.readValue(staticDataFactory.getContent(),Country.class);
-            //
-            //Mandatory Fields
-            if (country.getCode()==null || country.getCode().equalsIgnoreCase("")){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "code");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("code");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getFullname()==null || country.getFullname().equalsIgnoreCase("")){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "fullname");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("fullname");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getDisplayname()==null || country.getDisplayname().equalsIgnoreCase("")){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "displayname");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("displayname");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getIsocode()==null || country.getIsocode().equalsIgnoreCase("")){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "displayname");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("displayname");
-                errorItem = new ErrorItem("ENC0004","code","Country ISO Code cannot be null or empty");
-                appError.addErrorItem(errorItem);
-            }
-            //Length Checks
-            if (country.getCode()!=null && country.getCode().length()!=2){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0003");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "code");
-                hashMap.put("%%MINLENGTH%%", "2");
-                hashMap.put("%%MAXLENGTH%%", "2");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("code");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getIsocode()!=null && country.getIsocode().length()!=2){
-                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0003");
-                hashMap = new HashMap<String,String>();
-                hashMap.put("%%FIELDID%%", "isocode");
-                hashMap.put("%%MINLENGTH%%", "2");
-                hashMap.put("%%MAXLENGTH%%", "2");
-                errorCodeDB.parseKeywords(hashMap);
-                errorItem = errorCodeDB.getErrorItem("iscode");
-                appError.addErrorItem(errorItem);
-            }
 
-             */
 
         }catch (Exception e){
             e.printStackTrace();

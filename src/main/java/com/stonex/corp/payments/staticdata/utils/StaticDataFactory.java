@@ -2,14 +2,12 @@ package com.stonex.corp.payments.staticdata.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
-import com.stonex.corp.payments.staticdata.domain.Country;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.model.*;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
@@ -52,14 +50,17 @@ public class StaticDataFactory {
         Field[] fields = this.staticData.getClass().getDeclaredFields();
         for (Field field : fields){
             try {
-                Method method = this.staticData.getClass().getMethod("get"+field.getName()
-                        .replaceFirst(field.getName().substring(0, 1), field.getName()
-                                .substring(0, 1).toUpperCase()));
-                Object o = method.invoke(this.staticData);
-                if (o!=null){
-                    fieldValueMap.put(field.getName(),o);
+                Class<?> fieldType = field.getType();
+                //We skip Boolean and Complex Data Type fields
+                if (fieldType.getName().equalsIgnoreCase("java.lang.String")|| fieldType.getName().equalsIgnoreCase("int")){
+                    Method method = this.staticData.getClass().getMethod("get"+field.getName()
+                            .replaceFirst(field.getName().substring(0, 1), field.getName()
+                                    .substring(0, 1).toUpperCase()));
+                    Object o = method.invoke(this.staticData);
+                    if (o!=null){
+                        fieldValueMap.put(field.getName(),o);
+                    }
                 }
-
             } catch (Exception e){
                 e.printStackTrace();
             }
