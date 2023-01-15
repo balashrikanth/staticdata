@@ -23,7 +23,7 @@ public class StaticData {
         return "";
     }
     public String getJSONString(Document document){
-        return "";
+        return document.toJson();
     }
 
 

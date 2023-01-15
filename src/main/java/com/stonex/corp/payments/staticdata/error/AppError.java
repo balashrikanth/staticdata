@@ -70,7 +70,7 @@ public class AppError {
         this.errorType = "E";
         this.target = errorItem.getTarget();
         if (this.details.size()>1){
-            this.code="ENC9000";
+            this.code="EXX9999";
             this.message="Multiple Errors encountered";
         } else if (this.details.size()==1){
             this.code = errorItem.getCode();

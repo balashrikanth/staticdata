@@ -12,8 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 @Data
@@ -24,8 +23,8 @@ public class Country extends StaticData {
     private String fullname;
     private String displayname;
     private String isocode;
-    private String isonumericcode;
-    private String phonecode;
+    private int isonumericcode;
+    private int phonecode;
 
     @Override
     public String getCollectionName(){
@@ -47,10 +46,6 @@ public class Country extends StaticData {
     @Override
     public String getPK(){
         return this.code;
-    }
-    @Override
-    public String getJSONString(Document document){
-        return document.toJson();
     }
 
     @Override
@@ -99,46 +94,5 @@ public class Country extends StaticData {
         return stringList;
     }
 
-    @Override
-    public AppError fieldValidate(String content){
-        AppError appError = new AppError();
-        ErrorItem errorItem = new ErrorItem();
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Country country = objectMapper.readValue(content,Country.class);
-
-            //Mandatory Fields
-            if (country.getCode()==null || country.getCode().equalsIgnoreCase("")){
-                 errorItem = new ErrorItem("ENC0001","code","Country Code cannot be null or empty");
-                 appError.addErrorItem(errorItem);
-            }
-            if (country.getFullname()==null || country.getFullname().equalsIgnoreCase("")){
-                errorItem = new ErrorItem("ENC0002","fullname","Country Full Name cannot be null or empty");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getDisplayname()==null || country.getDisplayname().equalsIgnoreCase("")){
-                errorItem = new ErrorItem("ENC0003","displayname","Country Display Name cannot be null or empty");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getIsocode()==null || country.getIsocode().equalsIgnoreCase("")){
-                errorItem = new ErrorItem("ENC0004","code","Country ISO Code cannot be null or empty");
-                appError.addErrorItem(errorItem);
-            }
-            //Length Checks
-            if (country.getCode()!=null && country.getCode().length()!=2){
-                errorItem = new ErrorItem("ENC0005","code","Country Code should be 2 characters");
-                appError.addErrorItem(errorItem);
-            }
-            if (country.getIsocode()!=null && country.getIsocode().length()!=2){
-                errorItem = new ErrorItem("ENC0006","isocode","ISO Code should be 2 characters");
-                appError.addErrorItem(errorItem);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-            appError = new AppError("ENC9999","Unexpected Error ","E");
-        }
-        return appError;
-    }
 
 }

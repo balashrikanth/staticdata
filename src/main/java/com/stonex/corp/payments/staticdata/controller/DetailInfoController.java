@@ -1,23 +1,36 @@
 package com.stonex.corp.payments.staticdata.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
+import com.stonex.corp.payments.staticdata.domain.Country;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
+import com.stonex.corp.payments.staticdata.entity.EntityValidationRulesDB;
+import com.stonex.corp.payments.staticdata.entity.ErrorCodeDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.error.ErrorItem;
+import com.stonex.corp.payments.staticdata.model.FieldAttributes;
+import com.stonex.corp.payments.staticdata.model.FieldValidationRules;
+import com.stonex.corp.payments.staticdata.model.FieldValue;
+import com.stonex.corp.payments.staticdata.repository.EntityValidationRulesDBRepository;
+import com.stonex.corp.payments.staticdata.repository.ErrorCodeDBRepository;
 import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepository;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -31,12 +44,17 @@ public class DetailInfoController {
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
     @Autowired
     StaticDataAuditDBRepository staticDataAuditDBRepository;
+    @Autowired
+    ErrorCodeDBRepository errorCodeDBRepository;
+    @Autowired
+    EntityValidationRulesDBRepository entityValidationRulesDBRepository;
 
     @PostMapping("/new")
     public String createNew(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        AppError appError = staticDataFactory.fieldValidate(jsonContent);
+        //AppError appError = staticDataFactory.fieldValidate(jsonContent);
+        AppError appError = validate(staticDataFactory);
         if (appError.getDetails().size()==0){
             Document docapproved = staticDataDAL.findRecord(true,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
             Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
@@ -52,7 +70,9 @@ public class DetailInfoController {
                 appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,d));
             } else {
                 appError = new AppError();
-                ErrorItem errorItem = new ErrorItem("EN0001","code","Record Key Already Exists as Unapproved or Approved");
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ESD9001");
+                errorCodeDB.parseKeywords();
+                ErrorItem errorItem = errorCodeDB.getErrorItem("code");
                 appError.addErrorItem(errorItem);
                 appReturnObject.setReturncode(false);
                 appReturnObject.addError(appError);
@@ -76,7 +96,9 @@ public class DetailInfoController {
             appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDBRepository,docapproved));
         } else {
             AppError appError = new AppError();
-            ErrorItem errorItem = new ErrorItem("EN0003","code","Record Key Does not exist as Approved or Unapproved");
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ESD9005");
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
             appError.addErrorItem(errorItem);
             appReturnObject.setReturncode(false);
             appReturnObject.addError(appError);
@@ -192,7 +214,9 @@ public class DetailInfoController {
         Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         if (docunapproved==null){
             AppError appError = new AppError();
-            ErrorItem errorItem = new ErrorItem("EN0002","code","Record Key does not exist as Unapproved");
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ESD9005");
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
             appError.addErrorItem(errorItem);
             appReturnObject.setReturncode(false);
             appReturnObject.addError(appError);
@@ -202,7 +226,9 @@ public class DetailInfoController {
             if (staticDataMetaInfoDB !=null && staticDataMetaInfoDB.getLastAudit().getCreatorId().equalsIgnoreCase(userId)){
                 //Approver cannot be same as creator
                 AppError appError = new AppError();
-                ErrorItem errorItem = new ErrorItem("EN0009",functionId,"Approver cannot be same as person who created Record");
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ESD9002");
+                errorCodeDB.parseKeywords();
+                ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
                 appError.addErrorItem(errorItem);
                 appReturnObject.setReturncode(false);
                 appReturnObject.addError(appError);
@@ -249,7 +275,9 @@ public class DetailInfoController {
 
                 } else {
                     AppError appError = new AppError();
-                    ErrorItem errorItem = new ErrorItem("EN0009",functionId,"Unable to Move from Unapproved to Approved");
+                    ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ESD9003");
+                    errorCodeDB.parseKeywords();
+                    ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
                     appError.addErrorItem(errorItem);
                     appReturnObject.setReturncode(false);
                     appReturnObject.addError(appError);
@@ -257,6 +285,277 @@ public class DetailInfoController {
             }
         }
         return appReturnObject.setReturnJSON();
+    }
+
+    public AppError validate(StaticDataFactory staticDataFactory){
+        AppError appError = new AppError();
+        ErrorItem errorItem = new ErrorItem();
+        ErrorCodeDB errorCodeDB = new ErrorCodeDB();
+        HashMap<String,String> hashMap;
+        HashMap<String,Object> fieldValueMap = staticDataFactory.getFields();
+        List<EntityValidationRulesDB> entityValidationRulesDBList = entityValidationRulesDBRepository.findAllByFunctionid(staticDataFactory.getFunctionId());
+        try {
+            for(EntityValidationRulesDB entityValidationRulesDB : entityValidationRulesDBList){
+                List<FieldValidationRules> fieldValidationRulesList = entityValidationRulesDB.getFieldvalidationrules();
+                for (FieldValidationRules fieldValidationRules : fieldValidationRulesList){
+                    FieldAttributes fieldAttributes = fieldValidationRules.getFieldattributes();
+                    if (fieldValidationRules.getFieldid()!=null && fieldAttributes!=null){
+                        Object o = fieldValueMap.get(fieldValidationRules.getFieldid());
+                        //DataType Checks
+                        if (fieldAttributes.getDatatype()!=null){
+                            boolean dataTypeError = false;
+                            switch(fieldAttributes.getDatatype().trim().toUpperCase()){
+                                case "INTEGER":
+                                case "FLOAT":
+                                case "DOUBLE":
+                                    if (o!=null && o instanceof Number){
+                                        dataTypeError = false;
+                                    } else{
+                                        dataTypeError = true;
+                                    }
+                                    break;
+                                case "BOOLEAN":
+                                    try {
+                                        boolean b = (boolean) o;
+                                    } catch (Exception e){
+                                        dataTypeError=true;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (dataTypeError){
+                                if (fieldAttributes.getDatatypeerrorcode()!=null){
+                                    errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en",fieldAttributes.getMandatoryerrorcode());
+                                    if (errorCodeDB==null){
+                                        errorCodeDB = new ErrorCodeDB("EXXXXX","No Error Description Defined for "+fieldAttributes.getMandatoryerrorcode());
+                                    }
+                                } else {
+                                    errorCodeDB = new ErrorCodeDB("EXXXXX","Data Type Error "+fieldValidationRules.getFieldid());
+                                }
+                                hashMap = new HashMap<String,String>();
+                                hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
+                                hashMap.put("%%DATATYPE%%", fieldAttributes.getDatatype());
+                                errorCodeDB.parseKeywords(hashMap);
+                                errorItem = errorCodeDB.getErrorItem(fieldValidationRules.getFieldid());
+                                appError.addErrorItem(errorItem);
+
+                            }
+                        }
+                        //Mandatory Check
+                        if (fieldAttributes.isMandatory()){
+                            if (fieldAttributes.getDatatype()!=null && fieldAttributes.getDatatype().equalsIgnoreCase("STRING")){
+                                if (o==null || o.toString().equalsIgnoreCase("")){
+                                    if (fieldAttributes.getMandatoryerrorcode()!=null){
+                                        errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en",fieldAttributes.getMandatoryerrorcode());
+                                        if (errorCodeDB==null){
+                                            errorCodeDB = new ErrorCodeDB("EXXXXX","No Error Description Defined for "+fieldAttributes.getMandatoryerrorcode());
+                                        }
+
+                                    } else {
+                                        errorCodeDB = new ErrorCodeDB("EXXXXX","Mandatory Check failed for "+fieldValidationRules.getFieldid());
+                                    }
+                                    hashMap = new HashMap<String,String>();
+                                    hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
+                                    errorCodeDB.parseKeywords(hashMap);
+                                    errorItem = errorCodeDB.getErrorItem(fieldValidationRules.getFieldid());
+                                    appError.addErrorItem(errorItem);
+                                }
+                            }
+                        }
+                        //Data Constraint Checks
+                        if (fieldAttributes.getDataconstraint()!=null){
+                            boolean dataTypeError = false;
+                            switch(fieldAttributes.getDataconstraint().trim().toUpperCase()){
+                                case "ALPHABET":
+                                    if (o!=null){
+                                        if (o.toString().matches("^[a-zA-Z]*$")){
+                                            dataTypeError = false;
+                                        } else {
+                                            dataTypeError = true;
+                                        }
+                                    }
+                                    break;
+                                case "ALPHANUMERIC":
+                                    if (o!=null){
+                                        if (o.toString().matches("^[a-zA-Z0-9]*$")){
+                                            dataTypeError = false;
+                                        } else {
+                                            dataTypeError = true;
+                                        }
+                                    }
+                                    break;
+                                case "NUMERIC":
+                                    if (o!=null){
+                                        if (o.toString().matches("-?\\d+(\\.\\d+)?")){
+                                            dataTypeError = false;
+                                        } else {
+                                            dataTypeError = true;
+                                        }
+                                    }
+                                    break;
+                                case "EXTENDEDSET":
+                                    if (o!=null){
+                                        if (StringUtils.isAsciiPrintable(o.toString())){
+                                            dataTypeError = false;
+                                        } else {
+                                            dataTypeError = true;
+                                        }
+                                    }
+                                    break;
+                                case "SWIFTCHARSET":
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (dataTypeError){
+                                if (fieldAttributes.getDataconstrainterrorcode()!=null){
+                                    errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en",fieldAttributes.getDataconstrainterrorcode());
+                                    if (errorCodeDB==null){
+                                        errorCodeDB = new ErrorCodeDB("EXXXXX","No Error Description Defined for "+fieldAttributes.getMandatoryerrorcode());
+                                    }
+                                } else {
+                                    errorCodeDB = new ErrorCodeDB("EXXXXX","Data Constraint Error "+fieldValidationRules.getFieldid());
+                                }
+                                hashMap = new HashMap<String,String>();
+                                hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
+                                hashMap.put("%%CONSTRAINT%%", fieldAttributes.getDataconstraint());
+                                errorCodeDB.parseKeywords(hashMap);
+                                errorItem = errorCodeDB.getErrorItem(fieldValidationRules.getFieldid());
+                                appError.addErrorItem(errorItem);
+                            }
+
+                        }
+
+                        //MIN and MAX CHECKS
+                        int fieldValue = 0;//This will be length for string and actual value for numeric
+                        if (fieldAttributes.getDatatype()!=null && fieldAttributes.getMinlength()>0 && fieldAttributes.getMaxlength()>0){
+                            switch(fieldAttributes.getDatatype().trim().toUpperCase()){
+                                case "STRING":
+                                    fieldValue = o.toString().length();
+                                    break;
+                                case "INTEGER":
+                                    try {
+                                        fieldValue = (int) o;
+                                    } catch (Exception e){
+                                    }
+                                    break;
+                                case "FLOAT":
+                                    try {
+                                        Float floatValue = (Float) o;
+                                        fieldValue = Math.round(floatValue);
+                                    } catch (Exception e){
+                                    }
+                                    break;
+                                case "DOUBLE":
+                                    try {
+                                        Double doubleValue = (Double) o;
+                                        fieldValue = doubleValue.intValue();
+                                    } catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                            if (fieldValue<fieldAttributes.getMinlength() || fieldValue>fieldAttributes.getMaxlength()) {
+                                if (fieldAttributes.getLengtherrorcode()!=null){
+                                    errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en",fieldAttributes.getLengtherrorcode());
+                                    if (errorCodeDB==null){
+                                        errorCodeDB = new ErrorCodeDB("EXXXXX","No Error Description Defined for "+fieldAttributes.getLengtherrorcode());
+                                    }
+                                } else {
+                                    errorCodeDB = new ErrorCodeDB("EXXXXX","Data Length or Size Error "+fieldValidationRules.getFieldid());
+                                }
+                                hashMap = new HashMap<String,String>();
+                                hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
+                                hashMap.put("%%MINLENGTH%%",String.valueOf(fieldAttributes.getMinlength()));
+                                hashMap.put("%%MAXLENGTH%%",String.valueOf(fieldAttributes.getMaxlength()));
+                                errorCodeDB.parseKeywords(hashMap);
+                                errorItem = errorCodeDB.getErrorItem(fieldValidationRules.getFieldid());
+                                appError.addErrorItem(errorItem);
+                            }
+                        }
+                        //OTHER CHECKS - TO BE ADDED LIST OF VALUES
+
+                    }
+                }
+
+            }
+
+            /*
+            ObjectMapper objectMapper = new ObjectMapper();
+            Country country = objectMapper.readValue(staticDataFactory.getContent(),Country.class);
+            //
+            //Mandatory Fields
+            if (country.getCode()==null || country.getCode().equalsIgnoreCase("")){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "code");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("code");
+                appError.addErrorItem(errorItem);
+            }
+            if (country.getFullname()==null || country.getFullname().equalsIgnoreCase("")){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "fullname");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("fullname");
+                appError.addErrorItem(errorItem);
+            }
+            if (country.getDisplayname()==null || country.getDisplayname().equalsIgnoreCase("")){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "displayname");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("displayname");
+                appError.addErrorItem(errorItem);
+            }
+            if (country.getIsocode()==null || country.getIsocode().equalsIgnoreCase("")){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0002");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "displayname");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("displayname");
+                errorItem = new ErrorItem("ENC0004","code","Country ISO Code cannot be null or empty");
+                appError.addErrorItem(errorItem);
+            }
+            //Length Checks
+            if (country.getCode()!=null && country.getCode().length()!=2){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0003");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "code");
+                hashMap.put("%%MINLENGTH%%", "2");
+                hashMap.put("%%MAXLENGTH%%", "2");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("code");
+                appError.addErrorItem(errorItem);
+            }
+            if (country.getIsocode()!=null && country.getIsocode().length()!=2){
+                ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC0003");
+                hashMap = new HashMap<String,String>();
+                hashMap.put("%%FIELDID%%", "isocode");
+                hashMap.put("%%MINLENGTH%%", "2");
+                hashMap.put("%%MAXLENGTH%%", "2");
+                errorCodeDB.parseKeywords(hashMap);
+                errorItem = errorCodeDB.getErrorItem("iscode");
+                appError.addErrorItem(errorItem);
+            }
+
+             */
+
+        }catch (Exception e){
+            e.printStackTrace();
+            errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            if (errorCodeDB==null){
+                errorCodeDB = new ErrorCodeDB("EXXXXX","No Error Description Defined for ENC9999");
+            }
+            errorCodeDB.parseKeywords();
+            errorItem = errorCodeDB.getErrorItem(staticDataFactory.getFunctionId());
+            appError.addErrorItem(errorItem);
+        }
+        return appError;
     }
 
 

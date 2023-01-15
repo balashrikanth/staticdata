@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ErrorCodeDBRepository extends MongoRepository<ErrorCodeDB,String> {
+    public ErrorCodeDB findFirstByLanguageAndErrorcode(String language, String errorCode);
 }

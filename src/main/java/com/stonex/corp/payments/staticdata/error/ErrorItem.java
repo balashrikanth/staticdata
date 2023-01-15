@@ -11,4 +11,5 @@ public class ErrorItem {
     private String code;
     private String target;
     private String message;
+
 }
