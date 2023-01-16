@@ -19,5 +19,5 @@ public class Address {
     private String postalcode;
     private String state;
     private String country;
-    private List<String> addressLines;
+    private List<String> addressline;
 }

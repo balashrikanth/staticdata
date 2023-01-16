@@ -97,7 +97,7 @@ public class Country extends StaticData {
     //Implement this for audit trail- change info values to be show
     @Override
     public String[] getLabels(){
-        String [] stringList = new String[]{"isocode","fullname","displayname","isonumericcode","localcurrencycode","phonecode","entityid","allowselfregistration","allowpayment"};
+        String [] stringList = new String[]{"isocode","fullname","displayname","isonumericcode","localcurrencycode","phonecode","entityid","allowselfregistration","allowpayment","active"};
         return stringList;
     }
 

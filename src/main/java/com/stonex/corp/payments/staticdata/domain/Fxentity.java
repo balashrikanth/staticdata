@@ -1,7 +1,6 @@
 package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.Address;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
@@ -10,75 +9,77 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Entity extends StaticData {
-    private String code;
+public class Fxentity extends StaticData {
+    //KEEP ALL attributes in small case as reflection is used
+    private String entityid;
     private String fullname;
     private String displayname;
+    private String supportemail;
+    private int phonenumber;
     private Address address;
-    private List<String> sellcurrencycodes;
-    private List<String> buycurrencycodes;
+    private String[] products;
+    private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
+    //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
-        return "static-entity";
+        return "static-fxentity";
     }
-
+    //Implement this to form the primary key - also known as staticDataPK.
     @Override
     public String createPK(String content) {
-        String returnValue = "";
+        String returnValue ="";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Entity entity = objectMapper.readValue(content,Entity.class);
-            returnValue = entity.getCode();
-        } catch(Exception e){
+            Fxentity fxentity = objectMapper.readValue(content, Fxentity.class);
+            returnValue = fxentity.getEntityid();
+        }catch (Exception e){
             e.printStackTrace();
         }
         return returnValue;
     }
 
+    //Implement this to identify which fields constitute primary key
     @Override
     public String getPK(){
-        return this.code;
+        return this.entityid;
     }
 
+    //Implement this for extracting the object from mongo collection
     @Override
-    public String getJSONString(Document document){
-        return document.toJson();
-    }
-
-    @Override
-    public Entity getObjectFromDocument(Document document){
+    public Fxentity getObjectFromDocument(Document document){
         ObjectMapper objectMapper = new ObjectMapper();
-        Entity entity = new Entity();
+        Fxentity country = new Fxentity();
         try {
-            entity = objectMapper.readValue(document.toJson(),Entity.class);
-
+            country = objectMapper.readValue(document.toJson(), Fxentity.class);
         } catch (Exception e){
             e.printStackTrace();
         }
-        return entity;
+        return country;
     }
+
+    //Implement this for picklist columns for this collection
     @Override
     public Picklist getPickListHeaders(){
         Picklist picklist = new Picklist();
         picklist.setNoOfCols(3);//As set below
         String [] headers = new String[3];
-        headers[0] = "code";
+        headers[0] = "entityid";
         headers[1] = "displayname";
         headers[2] = "fullname";
         picklist.setPickListHeaders(headers);
         return picklist;
     }
+    //Implement this for picklist values in grid
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get("code")!=null){
-            picklistcols[0] = document.get("code").toString();
+        if (document.get("entityid")!=null){
+            picklistcols[0] = document.get("entityid").toString();
         }
         if (document.get("displayname")!=null){
             picklistcols[1] = document.get("displayname").toString();
@@ -88,4 +89,13 @@ public class Entity extends StaticData {
         }
         return picklistcols;
     }
+
+    //Implement this for audit trail- change info values to be show
+    @Override
+    public String[] getLabels(){
+        String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","active"};
+        return stringList;
+    }
+
+
 }
