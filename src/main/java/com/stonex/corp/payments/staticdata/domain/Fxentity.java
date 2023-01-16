@@ -19,9 +19,11 @@ public class Fxentity extends StaticData {
     private String fullname;
     private String displayname;
     private String supportemail;
-    private int phonenumber;
+    private String phonenumber;
     private Address address;
     private String[] products;
+    private String[] allowedsellccy;
+    private String[] allowedbuyccy;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
     //Implement this for which collection name is to be used

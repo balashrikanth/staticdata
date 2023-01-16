@@ -19,6 +19,8 @@ public class Currency extends StaticData {
     private String displayname;
     private int amountprecision;
     private int rateprecision;
+    private String[] homecountries;// In which countries thie CCY is home CCY
+    private String[] intermediaries;//Other countries to which ccy can be sent via intermediary
     private int spotdays;
     private int secondstoaccept;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
