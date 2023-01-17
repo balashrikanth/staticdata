@@ -25,9 +25,9 @@ public class PicklistController {
     public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
-        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
+        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
-        List<Document> documentList = staticDataDAL.getAllActive(true,staticDataFactory.getCollectionName());
+        List<Document> documentList = staticDataDAL.getAll(true,staticDataFactory.getCollectionName());
         Picklist picklist = staticDataFactory.getPickListHeaders();
         picklist.addRows(staticDataFactory.getPickListFromDocument(documentList));
         appReturnObject.PerformReturnArrayObject(picklist);
@@ -38,7 +38,7 @@ public class PicklistController {
     @PostMapping("/filtered")
     public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
-        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
+        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
         List<Document> documentList = staticDataDAL.getFiltered(true,staticDataFactory.getCollectionName(),jsonContent);
         Picklist picklist = staticDataFactory.getPickListHeaders();

@@ -8,8 +8,6 @@ import com.stonex.corp.payments.staticdata.error.AppError;
 import org.bson.Document;
 
 
-
-
 public class StaticData {
     @JsonIgnore
     public String getCollectionName(){

@@ -1,10 +1,8 @@
 package com.stonex.corp.payments.staticdata.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
-import com.stonex.corp.payments.staticdata.domain.Country;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 import com.stonex.corp.payments.staticdata.entity.EntityValidationRulesDB;
 import com.stonex.corp.payments.staticdata.entity.ErrorCodeDB;
@@ -14,7 +12,6 @@ import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.error.ErrorItem;
 import com.stonex.corp.payments.staticdata.model.FieldAttributes;
 import com.stonex.corp.payments.staticdata.model.FieldValidationRules;
-import com.stonex.corp.payments.staticdata.model.FieldValue;
 import com.stonex.corp.payments.staticdata.repository.EntityValidationRulesDBRepository;
 import com.stonex.corp.payments.staticdata.repository.ErrorCodeDBRepository;
 import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepository;
@@ -22,6 +19,8 @@ import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBReposi
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +51,19 @@ public class DetailInfoController {
     @PostMapping("/new")
     public String createNew(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         //AppError appError = staticDataFactory.fieldValidate(jsonContent);
         AppError appError = validate(staticDataFactory);
@@ -87,6 +99,19 @@ public class DetailInfoController {
     @PostMapping("editableRecord")
     public String getEditable(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         Document docapproved = staticDataDAL.getRecord(true,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         Document docunapproved = staticDataDAL.getRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
@@ -110,6 +135,19 @@ public class DetailInfoController {
     @PostMapping("/edit")
     public String edit( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         AppError appError = staticDataFactory.fieldValidate(jsonContent);
         if (appError.getDetails().size()==0){
@@ -147,6 +185,19 @@ public class DetailInfoController {
     @PostMapping("/undo")
     public String delete( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         boolean  result = staticDataDAL.undo(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         StaticDataMetaInfoDB staticDataMetaInfoDB2;
@@ -179,6 +230,19 @@ public class DetailInfoController {
     @PostMapping("/delete")
     public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         Document d = staticDataDAL.deleteApproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(), jsonContent);
         StaticDataMetaInfoDB staticDataMetaInfoDB2;
@@ -210,6 +274,19 @@ public class DetailInfoController {
     @PostMapping("/approve")
     public String approve(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestHeader("remark") String approveRemark, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
+        if (!isValid(jsonContent)){
+            AppError appError = new AppError();
+            ErrorCodeDB errorCodeDB = this.errorCodeDBRepository.findFirstByLanguageAndErrorcode("en","ENC9999");
+            HashMap<String, String> hashMap = new HashMap<String,String>();
+            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
+            errorCodeDB.parseKeywords(hashMap);
+            errorCodeDB.parseKeywords();
+            ErrorItem errorItem = errorCodeDB.getErrorItem(functionId);
+            appError.addErrorItem(errorItem);
+            appReturnObject.setReturncode(false);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
+        }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         if (docunapproved==null){
@@ -498,5 +575,13 @@ public class DetailInfoController {
         return appError;
     }
 
+    public boolean isValid(String json) {
+        try {
+            new JSONObject(json);
+        } catch (JSONException e) {
+            return false;
+        }
+        return true;
+    }
 
 }

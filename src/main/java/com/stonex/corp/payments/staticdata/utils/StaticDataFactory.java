@@ -29,6 +29,19 @@ public class StaticDataFactory {
     private StaticData staticData;
     private String className;
 
+    public StaticDataFactory(String functionId ){
+        this.functionId = functionId;
+        this.content = "";
+        this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            Class<?> staticDataDBClass = classLoader.loadClass(this.className);
+            Constructor<?> constructor = staticDataDBClass.getConstructor();
+            this.staticData = (StaticData) constructor.newInstance();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public StaticDataFactory(String functionId, String content){
         this.functionId = functionId;
