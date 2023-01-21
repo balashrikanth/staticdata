@@ -1,67 +1,118 @@
 package com.stonex.corp.payments.staticdata.controller;
 
-import com.stonex.corp.payments.staticdata.dto.PageResponse;
-import com.stonex.corp.payments.staticdata.model.StaticData;
-import com.stonex.corp.payments.staticdata.utils.FilterBuilderService;
-import com.stonex.corp.payments.staticdata.utils.FilterCondition;
-import com.stonex.corp.payments.staticdata.utils.GenericFilterCriteriaBuilder;
-import com.stonex.corp.payments.staticdata.utils.StaticDataService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
+import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
+
+import com.stonex.corp.payments.staticdata.model.GenericValue;
+import com.stonex.corp.payments.staticdata.model.PageInfo;
+import com.stonex.corp.payments.staticdata.model.QueryCriteriaKey;
+import com.stonex.corp.payments.staticdata.model.StaticQueryCriteria;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Filter;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/staticdata/search")
+@RequestMapping("/searchandfilter")
 public class SearchAndFilterController {
 
+    @Autowired
+    private final StaticDataDAL staticDataDAL;
 
-    //private final StaticDataService staticDataService;
-    private final FilterBuilderService filterBuilderService;
-
-    public SearchAndFilterController(FilterBuilderService filterBuilderService) {
-        this.filterBuilderService = filterBuilderService;
+    public SearchAndFilterController(StaticDataDAL staticDataDAL) {
+        this.staticDataDAL = staticDataDAL;
     }
 
-    /**
-     * @param page      page number
-     * @param size      size count
-     * @param filterOr  string filter or conditions
-     * @param filterAnd string filter and conditions
-     * @param orders    string orders
-     * @return PageResponse<Employee>
-     */
-    @GetMapping(value = "/page")
-    public ResponseEntity<PageResponse<StaticData>> getSearchCriteriaPage(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "20") int size,
-            @RequestParam(value = "filterOr", required = false) String filterOr,
-            @RequestParam(value = "filterAnd", required = false) String filterAnd,
-            @RequestParam(value = "orders", required = false) String orders) {
+    @GetMapping("/page")
+    public String getSearchCriteriaPage(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId,
+            @RequestParam (required=false) Map<String,String> reqparams) {
+        AppReturnObject appReturnObject = new AppReturnObject();
 
-        PageResponse<StaticData> response = new PageResponse<>();
-
-        Pageable pageable = filterBuilderService.getPageable(size, page, orders);
-        GenericFilterCriteriaBuilder filterCriteriaBuilder = new GenericFilterCriteriaBuilder();
+        //Defaults
+        int page = 0;
+        String orders = "ASC";//Other is DESC
+        int size = 20;
+        String orderby ="";
 
 
-        List<FilterCondition> andConditions = filterBuilderService.createFilterCondition(filterAnd);
-        List<FilterCondition> orConditions = filterBuilderService.createFilterCondition(filterOr);
+        StaticQueryCriteria staticQueryCriteria = new StaticQueryCriteria();
+        staticQueryCriteria.setQueryName("page");
+        QueryCriteriaKey queryCriteriaKey = new QueryCriteriaKey();
+        if (reqparams !=null){
+            for (String key : reqparams.keySet()){
+                switch (key.trim().toUpperCase()){
+                    case "PAGE":
+                        try {
+                            page = Integer.valueOf(reqparams.get(key));
+                        } catch (Exception e){
+                            //If bad value default used
+                        }
+                        break;
+                    case "ORDERS":
+                        orders = reqparams.get(key);
+                        break;
+                    case "ORDERBY":
+                        orderby = reqparams.get(key);
+                        break;
+                    case "SIZE":
+                        try {
+                            size = Integer.valueOf(reqparams.get(key));
+                        }catch (Exception e){
+                            //If bad value default used
+                        }
+                        break;
+                    default:
+                        queryCriteriaKey.setCriteriaKey(key);
+                        queryCriteriaKey.setGenericValue(new GenericValue(reqparams.get(key)));
+                }
+            }
+        }
+        PageInfo pageInfo = new PageInfo(size,page);
+        staticQueryCriteria.addCSICriteriaKey(queryCriteriaKey);
+        staticQueryCriteria.setLogicalOperator("AND");
+        staticQueryCriteria.setFetchAll(true);
+        Query query = staticQueryCriteria.getQuery();
+        /*if (orderby!=null ){
+            if (orders.equalsIgnoreCase("DESC")){
+                query.with(new Sort(Sort.Direction.DESC,orderby));
+            } else {
+                query.with(new Sort(Sort.Direction.ASC,orderby));
+            }
+        }
 
-        Query query = filterCriteriaBuilder.addCondition(andConditions, orConditions);
-        //Page<StaticData> pg = .getPage(query, pageable);
-        //response.setPageStats(pg, pg.getContent());
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+         */
+        List<Object> objectList = this.staticDataDAL.getPage(true,functionId,staticQueryCriteria.getQuery(), pageInfo);
+        appReturnObject.PerformReturnArrayObject(objectList);
+        return appReturnObject.setReturnJSON();
     }
 
+    @GetMapping("/all")
+    public String getAllSearchCriteria(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId,
+            @RequestParam (required=false) Map<String,String> reqparams) {
+        AppReturnObject appReturnObject = new AppReturnObject();
+
+        StaticQueryCriteria staticQueryCriteria = new StaticQueryCriteria();
+        staticQueryCriteria.setQueryName("all");
+        QueryCriteriaKey queryCriteriaKey = new QueryCriteriaKey();
+        if (reqparams !=null){
+            for (String key : reqparams.keySet()){
+                queryCriteriaKey.setCriteriaKey(key);
+                queryCriteriaKey.setGenericValue(new GenericValue(reqparams.get(key)));
+            }
+        }
+        staticQueryCriteria.addCSICriteriaKey(queryCriteriaKey);
+        staticQueryCriteria.setLogicalOperator("AND");
+        staticQueryCriteria.setFetchAll(true);
+        List<Object> objectList = this.staticDataDAL.getAll(true,functionId,staticQueryCriteria.getQuery());
+        appReturnObject.PerformReturnArrayObject(objectList);
+        return appReturnObject.setReturnJSON();
+    }
 
 }

@@ -29,6 +29,7 @@ public class Audit {
     }
     public void addUser(String userId,String action){
         this.action = action;
+        this.creatorId = userId;
         this.creationDate = Instant.now().getEpochSecond();
         this.approverId="";//Clear Approver Information
         this.approvedDate=0;

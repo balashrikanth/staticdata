@@ -3,6 +3,7 @@ package com.stonex.corp.payments.staticdata.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import org.bson.Document;
@@ -25,6 +26,10 @@ public class StaticData {
     }
 
 
+
+    public void enrichFields(){
+
+    }
 
     public StaticData getObjectFromDocument(Document document){
         StaticData staticData = new StaticData();

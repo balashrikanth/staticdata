@@ -16,8 +16,7 @@ import java.util.List;
 public class SummaryInfoController {
     @Autowired
     StaticDataDAL staticDataDAL;
-    @Autowired
-    StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
+
 
     @GetMapping("/all")
     public String getAllSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId){
@@ -25,7 +24,7 @@ public class SummaryInfoController {
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         List<Document> documentList = staticDataDAL.getAll(approved,staticDataFactory.getCollectionName());
-        appReturnObject.PerformReturnArrayObject(staticDataFactory.getObjectFromDocumentList(staticDataMetaInfoDBRepository,documentList));
+        appReturnObject.PerformReturnArrayObject(staticDataFactory.getObjectFromDocumentList(documentList));
         return appReturnObject.setReturnJSON();
     }
 
@@ -35,7 +34,7 @@ public class SummaryInfoController {
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,"");
         List<Document> documentList = staticDataDAL.getFiltered(approved,staticDataFactory.getCollectionName(),jsonContent);
-        appReturnObject.PerformReturnArrayObject(staticDataFactory.getObjectFromDocumentList(staticDataMetaInfoDBRepository,documentList));
+        appReturnObject.PerformReturnArrayObject(staticDataFactory.getObjectFromDocumentList(documentList));
         return appReturnObject.setReturnJSON();
 
     }

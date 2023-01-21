@@ -1,7 +1,9 @@
 package com.stonex.corp.payments.staticdata.utils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.model.*;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
@@ -30,31 +32,36 @@ public class StaticDataFactory {
     private String className;
 
     public StaticDataFactory(String functionId ){
-        this.functionId = functionId;
-        this.content = "";
-        this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
         try {
+            this.functionId = functionId;
+            this.content = "";
+            this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             Class<?> staticDataDBClass = classLoader.loadClass(this.className);
             Constructor<?> constructor = staticDataDBClass.getConstructor();
             this.staticData = (StaticData) constructor.newInstance();
         } catch (Exception e){
+            this.staticData=null;//This indicates that the Static Data was not instantiated to correct object
             e.printStackTrace();
         }
     }
 
     public StaticDataFactory(String functionId, String content){
-        this.functionId = functionId;
-        this.content = content;
-        this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
         try {
+            this.functionId = functionId;
+            this.content = content;
+            this.className = SystemFieldConfig.BASECLASS.concat(".domain.").concat(functionId);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             Class<?> staticDataDBClass = classLoader.loadClass(this.className);
             Constructor<?> constructor = staticDataDBClass.getConstructor();
             this.staticData = (StaticData) constructor.newInstance();
             ObjectMapper objectMapper = new ObjectMapper();
             this.staticData = objectMapper.readValue(content,this.staticData.getClass());
+            this.staticData.enrichFields();
+            //If enriched update content with enriched values
+            this.content = getJSONString(this.staticData);
         } catch (Exception e){
+            this.staticData=null;//This indicates that the Static Data was not instantiated to correct object
             e.printStackTrace();
         }
     }
@@ -97,11 +104,17 @@ public class StaticDataFactory {
         return stringArrayList;
     }
 
-    public Object getObjectFromDocument(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, Document document){
+    public Object getObjectFromDocument( Document document){
+        StaticData staticData1 = staticData.getObjectFromDocument(document);
+        return staticData1;
+    }
+
+
+    public Object getObjectFromDocument(StaticDataMetaInfoDB staticDataMetaInfoDB, Document document){
         StaticData staticData1 = staticData.getObjectFromDocument(document);
         Audit audit = new Audit();
         try {
-             audit = staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticData1.getPK()).getLastAudit();
+             audit = staticDataMetaInfoDB.getLastAudit();
             StaticDataWithAudit staticDataWithAudit = new StaticDataWithAudit(staticData1,audit);
             return staticDataWithAudit;
         } catch (Exception e){
@@ -111,10 +124,18 @@ public class StaticDataFactory {
     }
 
 
-    public Object getObjectFromDocumentList(StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository, List<Document> documentList){
+    public Object getObjectFromDocumentList( List<Document> documentList){
         ArrayList<Object> objectArrayList = new ArrayList<>();
         for (Document d : documentList){
-            objectArrayList.add(getObjectFromDocument(staticDataMetaInfoDBRepository,d));
+            objectArrayList.add(getObjectFromDocument(d));
+        }
+        return objectArrayList;
+    }
+
+    public Object getObjectFromDocumentList(StaticDataMetaInfoDB staticDataMetaInfoDB, List<Document> documentList){
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        for (Document d : documentList){
+            objectArrayList.add(getObjectFromDocument(staticDataMetaInfoDB,d));
         }
         return objectArrayList;
     }
@@ -132,11 +153,27 @@ public class StaticDataFactory {
         return stringArrayList;
     }
 
+    @JsonIgnore
     public String[] getLabels(){
         return this.staticData.getLabels();
     }
     public AppError fieldValidate(String content){
         return this.staticData.fieldValidate(content);
+    }
+
+    public String getJSONString(Object o){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.getFactory().setCharacterEscapes(new CustomCharacterEscapes());
+        String returnValue=null;
+        try {
+            // convert user object to json string and return it
+            returnValue = mapper.writeValueAsString(o);
+        }
+        catch (Exception  e) {
+            // catch various errors
+            e.printStackTrace();
+        }
+        return returnValue;
     }
 
 }

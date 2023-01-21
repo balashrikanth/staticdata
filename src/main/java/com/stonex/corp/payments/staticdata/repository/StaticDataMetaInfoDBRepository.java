@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StaticDataMetaInfoDBRepository extends MongoRepository<StaticDataMetaInfoDB,String> {
-    StaticDataMetaInfoDB findFirstByStaticDataPK(String staticDataPK);
+    StaticDataMetaInfoDB findFirstByStaticDataPKAndCollectionName(String statciDataPK, String collectionName);
 }

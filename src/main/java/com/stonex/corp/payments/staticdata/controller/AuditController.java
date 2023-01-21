@@ -31,7 +31,7 @@ public class AuditController {
     public String getAuditforRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        StaticDataMetaInfoDB staticDataMetaInfoDB = this.staticDataMetaInfoDBRepository.findFirstByStaticDataPK(staticDataFactory.getPKValue());
+        StaticDataMetaInfoDB staticDataMetaInfoDB = this.staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
         appReturnObject.PerformReturnObject(staticDataMetaInfoDB.getAuditInfoList());
         return appReturnObject.setReturnJSON();
     }

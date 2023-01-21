@@ -1,8 +1,12 @@
 package com.stonex.corp.payments.staticdata.dal;
 
 
-import org.bson.Document;
 
+import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
+import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
+import com.stonex.corp.payments.staticdata.model.PageInfo;
+import org.bson.Document;
+import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 
 public interface StaticDataDAL {
@@ -20,4 +24,9 @@ public interface StaticDataDAL {
     public boolean undo(String collectionName,  String staticDataPK);
     public Document deleteApproved(String collectionName,  String staticDataPK, String content);
     public boolean removeApproved(String collectionName,  String staticDataPK, String content);
+    public List<Object> getAll(boolean approved, String functionId, Query query);
+    public List<Object> getPage(boolean approved, String functionId, Query query, PageInfo pageInfo);
+    public StaticDataMetaInfoDB saveMetaData(String staticDataPK, String collectionName, String userId, String action, String approveRemark);
+    public StaticDataMetaInfoDB getMetaData(String staticDataPK, String collectionName);
+    public StaticDataAuditDB saveAuditData(String staticDataPK, String functionId, String collectionName,String content, StaticDataMetaInfoDB staticDataMetaInfoDB);
 }

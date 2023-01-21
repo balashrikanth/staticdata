@@ -1,5 +1,6 @@
 package com.stonex.corp.payments.staticdata.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.model.Address;
 import com.stonex.corp.payments.staticdata.model.Picklist;
@@ -8,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
+
+import java.util.ArrayList;
 
 
 @Data
@@ -51,17 +54,72 @@ public class Fxentity extends StaticData {
         return this.entityid;
     }
 
+    //Implement this if you have to fill up other fields from main fields - denormalize scenario
+    @Override
+    public void enrichFields(){
+        ArrayList<String> addressLine = new ArrayList<String>();
+        if (address!=null){
+            String line1="";//Floor Building
+            if (address.getFloor()!=null){
+               line1 = line1.concat(address.getFloor().concat(" "));//Extra space as separator between fields
+            }
+            if (address.getBuildingname()!=null){
+                line1 = line1.concat(address.getBuildingname());
+            }
+            if (!line1.equalsIgnoreCase("")){
+                addressLine.add(line1);
+            }
+            String line2="";//Building No Street
+            if (address.getBuildingno()!=null){
+                line2 = line2.concat(address.getBuildingno().concat(" "));
+            }
+            if (address.getStreet()!=null){
+                line2 = line2.concat(address.getStreet());
+            }
+            if (!line2.equalsIgnoreCase("")){
+                addressLine.add(line2);
+            }
+            String line3="";//City District State
+            if (address.getCity()!=null){
+                line3 = line3.concat(address.getCity().concat(" "));
+            }
+            if (address.getDistrict()!=null){
+                line3 = line3.concat(address.getDistrict().concat(" "));
+            }
+            if (address.getState()!=null){
+                line3 =  line3.concat(address.getState());
+            }
+            if (!line3.equalsIgnoreCase("")){
+                addressLine.add(line3);
+            }
+            String line4="";//Country Postal Code
+            if (address.getCountry()!=null){
+                line4 = line4.concat(address.getCountry().concat(" "));
+            }
+            if (address.getPostalcode()!=null){
+                line4 = line4.concat(address.getPostalcode());
+            }
+            if (!line4.equalsIgnoreCase("")){
+                addressLine.add(line4);
+            }
+        }
+
+        if (addressLine.size()>0){
+            this.address.setAddressline(addressLine);
+        }
+    }
+
     //Implement this for extracting the object from mongo collection
     @Override
     public Fxentity getObjectFromDocument(Document document){
         ObjectMapper objectMapper = new ObjectMapper();
-        Fxentity country = new Fxentity();
+        Fxentity fxentity = new Fxentity();
         try {
-            country = objectMapper.readValue(document.toJson(), Fxentity.class);
+            fxentity = objectMapper.readValue(document.toJson(), Fxentity.class);
         } catch (Exception e){
             e.printStackTrace();
         }
-        return country;
+        return fxentity;
     }
 
     //Implement this for picklist columns for this collection
@@ -94,6 +152,7 @@ public class Fxentity extends StaticData {
 
     //Implement this for audit trail- change info values to be show
     @Override
+    @JsonIgnore
     public String[] getLabels(){
         String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","active"};
         return stringList;
