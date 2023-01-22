@@ -38,12 +38,14 @@ public class SummaryInfoController {
             StaticDataWithAudit staticDataWithAudit;
             try {
                 audit = staticDataMetaInfoDB.getLastAudit();
-                 staticDataWithAudit = new StaticDataWithAudit(staticDataFactory.getStaticData(),audit);
+                 staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
             } catch (Exception e){
                 e.printStackTrace();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory.getStaticData());
+                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
+
             }
             staticDataWithAuditList.add(staticDataWithAudit);
+
         }
         appReturnObject.PerformReturnArrayObject(staticDataWithAuditList);
         return appReturnObject.setReturnJSON();
@@ -63,10 +65,10 @@ public class SummaryInfoController {
             StaticDataWithAudit staticDataWithAudit;
             try {
                 audit = staticDataMetaInfoDB.getLastAudit();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory.getStaticData(),audit);
+                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
             } catch (Exception e){
                 e.printStackTrace();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory.getStaticData());
+                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
             }
             staticDataWithAuditList.add(staticDataWithAudit);
         }

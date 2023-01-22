@@ -48,7 +48,6 @@ public class PicklistController {
 
     }
 
-
     @PostMapping("/filtered")
     public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
