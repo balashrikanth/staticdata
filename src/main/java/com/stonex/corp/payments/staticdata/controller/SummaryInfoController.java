@@ -19,7 +19,7 @@ public class SummaryInfoController {
 
 
     @GetMapping("/all")
-    public String getAllSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId){
+    public String getAllSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
@@ -30,7 +30,7 @@ public class SummaryInfoController {
 
 
     @PostMapping("/filtered")
-    public String getFilteredSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
+    public String getFilteredSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,"");
         List<Document> documentList = staticDataDAL.getFiltered(approved,staticDataFactory.getCollectionName(),jsonContent);
@@ -40,7 +40,7 @@ public class SummaryInfoController {
     }
 
     @GetMapping("/count/function/{function}/approved/{approved}")
-    public long getRecordCount(@PathVariable("function") String functionId, @PathVariable("approved") boolean approved){
+    public long getRecordCount(@PathVariable("function") String functionId,@RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @PathVariable("approved") boolean approved){
         AppReturnObject appReturnObject = new AppReturnObject();
         long counter=0;
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,"");

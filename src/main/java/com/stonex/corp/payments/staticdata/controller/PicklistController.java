@@ -22,7 +22,7 @@ public class PicklistController {
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
 
     @GetMapping("/all")
-    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId){
+    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
@@ -35,8 +35,8 @@ public class PicklistController {
 
     }
 
-    @GetMapping("/specific/recordkey/{recordkey}")
-    public String getSpecificItem( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @PathVariable("recordkey") String recordkey){
+    @GetMapping("/specific/functionId/{functionId}/recordkey/{recordkey}")
+    public String getSpecificItemByFunctionAndKey( @PathVariable("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @PathVariable("recordkey") String recordkey){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);

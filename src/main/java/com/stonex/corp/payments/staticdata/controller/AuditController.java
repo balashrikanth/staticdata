@@ -28,7 +28,7 @@ public class AuditController {
 
 
     @PostMapping("/record")
-    public String getAuditforRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
+    public String getAuditforRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         StaticDataMetaInfoDB staticDataMetaInfoDB = this.staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
@@ -37,7 +37,7 @@ public class AuditController {
     }
 
     @PostMapping("/change/version/{version}")
-    public String getChangeForAuditRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId,@PathVariable("version") int version, @RequestBody String jsonContent){
+    public String getChangeForAuditRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId,@RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId,@PathVariable("version") int version, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         StaticDataAuditDB staticDataAuditDB = this.staticDataAuditDBRepository.findFirstByStaticDataPKAndCollectionNameAndVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),version);

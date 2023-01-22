@@ -31,7 +31,7 @@ public class SearchAndFilterController {
     }
 
     @GetMapping("/page")
-    public String getSearchCriteriaPage(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId,
+    public String getSearchCriteriaPage(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId,
             @RequestParam (required=false) Map<String,String> reqparams) {
         AppReturnObject appReturnObject = new AppReturnObject();
 

@@ -41,7 +41,7 @@ public class DetailInfoController {
 
 
     @PostMapping("/new")
-    public String createNew(@RequestHeader("functionId") String functionId,  @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String createNew(@RequestHeader("functionId") String functionId,  @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -83,7 +83,7 @@ public class DetailInfoController {
     }
 
     @PostMapping("editableRecord")
-    public String getEditable(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String getEditable(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -113,7 +113,7 @@ public class DetailInfoController {
     }
 
     @PostMapping("/edit")
-    public String edit( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String edit( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -142,7 +142,7 @@ public class DetailInfoController {
 
     //Delete Unapproved is like Undo
     @PostMapping("/undo")
-    public String delete( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String delete( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -167,7 +167,7 @@ public class DetailInfoController {
 
     //Delete Approved - creates a new unapproved and it is pending approval
     @PostMapping("/delete")
-    public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId,@RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -191,7 +191,7 @@ public class DetailInfoController {
     }
 
     @PostMapping("/approve")
-    public String approve(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestHeader("remark") String approveRemark, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String approve(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @RequestHeader("remark") String approveRemark, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
