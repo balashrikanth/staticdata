@@ -1,5 +1,6 @@
 package com.stonex.corp.payments.staticdata.controller;
 
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 
@@ -31,7 +32,7 @@ public class SearchAndFilterController {
     }
 
     @GetMapping("/page")
-    public String getSearchCriteriaPage(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId,
+    public String getSearchCriteriaPage(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId,
             @RequestParam (required=false) Map<String,String> reqparams) {
         AppReturnObject appReturnObject = new AppReturnObject();
 

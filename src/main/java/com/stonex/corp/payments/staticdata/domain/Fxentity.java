@@ -2,7 +2,9 @@ package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.Address;
+import com.stonex.corp.payments.staticdata.model.MessageTemplateId;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -27,12 +30,15 @@ public class Fxentity extends StaticData {
     private String[] products;
     private String[] allowedsellccy;
     private String[] allowedbuyccy;
+    private String relationshiptype;
+    private String masteragreementtype;
+    private List<MessageTemplateId> messagetemplateidlist;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
     //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
-        return "static-fxentity";
+        return SystemFieldConfig.ENTITYPREFIX+"fxentity";
     }
     //Implement this to form the primary key - also known as staticDataPK.
     @Override
@@ -154,7 +160,7 @@ public class Fxentity extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","address.buildingno","address.buildingname","address.floor","address.street","address.city","address.district","address.postalcode","address.state","address.country","products[]","allowedsellccy[]","allowedbuyccy[]","active"};
+        String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","address.buildingno","address.buildingname","address.floor","address.street","address.city","address.district","address.postalcode","address.state","address.country","products[]","allowedsellccy[]","allowedbuyccy[]","relationshiptype","masteragreementtype","messagetemplateidlist[]","active"};
         return stringList;
     }
 

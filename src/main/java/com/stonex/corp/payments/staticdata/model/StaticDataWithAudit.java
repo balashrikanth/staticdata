@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class StaticDataWithAudit {
     private StaticData staticData;
     private Audit audit;
+
+    public StaticDataWithAudit(StaticData staticData){
+        this.staticData = staticData;
+        this.audit = new Audit();
+    }
 }

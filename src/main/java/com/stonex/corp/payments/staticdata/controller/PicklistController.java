@@ -1,5 +1,6 @@
 package com.stonex.corp.payments.staticdata.controller;
 
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 import com.stonex.corp.payments.staticdata.model.Picklist;
@@ -22,7 +23,7 @@ public class PicklistController {
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
 
     @GetMapping("/all")
-    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId){
+    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
@@ -35,8 +36,8 @@ public class PicklistController {
 
     }
 
-    @GetMapping("/specific/functionId/{functionId}/recordkey/{recordkey}")
-    public String getSpecificItemByFunctionAndKey( @PathVariable("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @PathVariable("recordkey") String recordkey){
+    @GetMapping("/specific/function/{functionid}/recordkey/{recordkey}")
+    public String getSpecificItemByFunctionAndKey( @PathVariable("functionid") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @PathVariable("recordkey") String recordkey){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
@@ -49,7 +50,7 @@ public class PicklistController {
 
 
     @PostMapping("/filtered")
-    public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
+    public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved

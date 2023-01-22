@@ -6,14 +6,12 @@ import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.model.*;
-import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
-import javax.print.Doc;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -105,10 +103,7 @@ public class StaticDataFactory {
         return stringArrayList;
     }
 
-    public Object getObjectFromDocument( Document document){
-        StaticData staticData1 = staticData.getObjectFromDocument(document);
-        return staticData1;
-    }
+
 
 
     public Object getObjectFromDocument(StaticDataMetaInfoDB staticDataMetaInfoDB, Document document){
@@ -125,21 +120,6 @@ public class StaticDataFactory {
     }
 
 
-    public Object getObjectFromDocumentList( List<Document> documentList){
-        ArrayList<Object> objectArrayList = new ArrayList<>();
-        for (Document d : documentList){
-            objectArrayList.add(getObjectFromDocument(d));
-        }
-        return objectArrayList;
-    }
-
-    public Object getObjectFromDocumentList(StaticDataMetaInfoDB staticDataMetaInfoDB, List<Document> documentList){
-        ArrayList<Object> objectArrayList = new ArrayList<>();
-        for (Document d : documentList){
-            objectArrayList.add(getObjectFromDocument(staticDataMetaInfoDB,d));
-        }
-        return objectArrayList;
-    }
 
     public Picklist getPickListHeaders(){
         return this.staticData.getPickListHeaders();

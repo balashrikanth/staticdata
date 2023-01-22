@@ -3,6 +3,7 @@ package com.stonex.corp.payments.staticdata.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.model.CurrencyFee;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
@@ -10,27 +11,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 
+import java.util.List;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Currency extends StaticData {
+public class Clientfee extends StaticData {
     //KEEP ALL attributes in small case as reflection is used
-    private String isocode;
-    private String fullname;
-    private String displayname;
-    private int amountprecision;
-    private int rateprecision;
-    private String[] homecountries;// In which countries thie CCY is home CCY
-    private String[] intermediaries;//Other countries to which ccy can be sent via intermediary
-    private int spotdays;
-    private int secondstoaccept;
+    private String clientid;
+    private String clientsellcurrencycode;
+    private float samecurrencyfee;
+    private List<CurrencyFee> clientbuycurrencies;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
     //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
-        return SystemFieldConfig.ENTITYPREFIX+"currency";
+        return SystemFieldConfig.ENTITYPREFIX+ "clientfee";
     }
     //Implement this to form the primary key - also known as staticDataPK.
     @Override
@@ -38,8 +36,8 @@ public class Currency extends StaticData {
         String returnValue ="";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Currency currency = objectMapper.readValue(content, Currency.class);
-            returnValue = currency.getIsocode();
+            Clientfee clientfee = objectMapper.readValue(content, Clientfee.class);
+            returnValue = clientfee.getClientid().concat(getClientsellcurrencycode());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -49,46 +47,42 @@ public class Currency extends StaticData {
     //Implement this to identify which fields constitute primary key
     @Override
     public String getPK(){
-        return this.isocode.toUpperCase();//Key always upper case
+        return this.clientid.toUpperCase().concat(this.clientsellcurrencycode.toUpperCase());//Key always upper case
     }
 
     //Implement this for extracting the object from mongo collection
     @Override
-    public Currency getObjectFromDocument(Document document){
+    public Clientfee getObjectFromDocument(Document document){
         ObjectMapper objectMapper = new ObjectMapper();
-        Currency country = new Currency();
+        Clientfee clientfee = new Clientfee();
         try {
-            country = objectMapper.readValue(document.toJson(), Currency.class);
+            clientfee = objectMapper.readValue(document.toJson(), Clientfee.class);
         } catch (Exception e){
             e.printStackTrace();
         }
-        return country;
+        return clientfee;
     }
 
     //Implement this for picklist columns for this collection
     @Override
     public Picklist getPickListHeaders(){
         Picklist picklist = new Picklist();
-        picklist.setNoOfCols(3);//As set below
-        String [] headers = new String[3];
-        headers[0] = "isocode";
-        headers[1] = "displayname";
-        headers[2] = "fullname";
+        picklist.setNoOfCols(2);//As set below
+        String [] headers = new String[2];
+        headers[0] = "clientid";
+        headers[1] = "clientsellcurrencycode";
         picklist.setPickListHeaders(headers);
         return picklist;
     }
     //Implement this for picklist values in grid
     @Override
     public String[] getPickListRow(Document document){
-        String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get("isocode")!=null){
-            picklistcols[0] = document.get("isocode").toString();
+        String [] picklistcols = new String[]{"NA","NA"};
+        if (document.get("clientid")!=null){
+            picklistcols[0] = document.get("clientid").toString();
         }
-        if (document.get("displayname")!=null){
-            picklistcols[1] = document.get("displayname").toString();
-        }
-        if (document.get("fullname")!=null){
-            picklistcols[2] = document.get("fullname").toString();
+        if (document.get("clientsellcurrencycode")!=null){
+            picklistcols[1] = document.get("clientsellcurrencycode").toString();
         }
         return picklistcols;
     }
@@ -97,7 +91,7 @@ public class Currency extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"isocode","fullname","displayname","amountprecision","rateprecision","homecountries[]","intermediaries[]","spotdays","secondstoaccept","active"};
+        String [] stringList = new String[]{"clientid","clientsellcurrencycode","samecurrencyfee","clientbuycurrencies[]","active"};
         return stringList;
     }
 
