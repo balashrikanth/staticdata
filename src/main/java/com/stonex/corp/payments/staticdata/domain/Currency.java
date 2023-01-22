@@ -1,5 +1,6 @@
 package com.stonex.corp.payments.staticdata.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
@@ -93,6 +94,7 @@ public class Currency extends StaticData {
 
     //Implement this for audit trail- change info values to be show
     @Override
+    @JsonIgnore
     public String[] getLabels(){
         String [] stringList = new String[]{"isocode","fullname","displayname","amountprecision","rateprecision","spotdays","secondstoaccept","active"};
         return stringList;

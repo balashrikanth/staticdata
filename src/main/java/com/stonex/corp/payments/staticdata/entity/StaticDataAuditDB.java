@@ -2,6 +2,10 @@ package com.stonex.corp.payments.staticdata.entity;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.stonex.corp.payments.staticdata.domain.Country;
 import com.stonex.corp.payments.staticdata.model.ChangeInfo;
 import com.stonex.corp.payments.staticdata.model.StaticData;
@@ -9,6 +13,7 @@ import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -56,7 +61,7 @@ public class StaticDataAuditDB {
         }
     }
 
-    public List<ChangeInfo> getChangeInfo(String[] labels){
+    public List<ChangeInfo> getChangeInfoOld(String[] labels){
         List<ChangeInfo> changeInfoList = new ArrayList<ChangeInfo>();
 
         for (String s : labels){
@@ -81,6 +86,68 @@ public class StaticDataAuditDB {
         return changeInfoList;
     }
 
+    public List<ChangeInfo> getChangeInfo(String[] labels){
+        List<ChangeInfo> changeInfoList = new ArrayList<ChangeInfo>();
+        for (String s : labels){
+            ChangeInfo changeInfo = new ChangeInfo();
+            changeInfo.setFieldName(s);
+            if (this.oldcontent!=null){
+                changeInfo.setOldValue(getRecursiveElement(this.oldcontent,s));
+            }
+            if (this.newcontent!=null){
+                changeInfo.setNewValue(getRecursiveElement(this.newcontent,s));
+            }
+            if (changeInfo.getOldValue()!=null && changeInfo.getNewValue()!=null){
+                if (!changeInfo.getOldValue().trim().equalsIgnoreCase(changeInfo.getNewValue().trim())){
+                    changeInfo.setDifference(true);
+                }
+            }
+            changeInfoList.add(changeInfo);
+        }
+        return changeInfoList;
+    }
 
-
+    public String getRecursiveElement(String labelContent, String label) {
+        String returnValue="";
+        try {
+            Gson gson = new GsonBuilder().create();
+            JsonObject gsonJsonObject = gson.fromJson(labelContent, JsonObject.class);
+            int elementCount = StringUtils.countMatches(label, ".");
+            int arrayCount = StringUtils.countMatches(label,"[]");
+            JsonObject partialobject = new JsonObject();
+            if (elementCount>0 && arrayCount>0 ){
+                //If both inner element is found and the last element is array
+                String[] labelSets = label.split("\\.");
+                for (int i=0;i<=elementCount;i++){
+                    if (i==elementCount){
+                        String splitlabel = labelSets[i].split("\\[")[0];
+                        returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
+                    } else {
+                        partialobject = gsonJsonObject.getAsJsonObject(labelSets[i]);
+                    }
+                }
+            } else if (elementCount > 0) {
+                //If only inner element is found
+                String[] labelSets = label.split("\\.");
+                for (int i=0;i<=elementCount;i++){
+                    if (i==elementCount){
+                        returnValue = partialobject.get(labelSets[i]).getAsString();
+                    } else {
+                        partialobject = gsonJsonObject.getAsJsonObject(labelSets[i]);
+                    }
+                }
+            } else if (arrayCount>0){
+                //If only array found
+                String splitlabel = label.split("\\[")[0];
+                returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
+            }
+            else {
+                //simple element
+                returnValue = gsonJsonObject.get(label).getAsString();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  returnValue;
+    }
 }

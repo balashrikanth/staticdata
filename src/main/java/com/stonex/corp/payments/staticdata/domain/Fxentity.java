@@ -154,7 +154,7 @@ public class Fxentity extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","active"};
+        String [] stringList = new String[]{"entityid","fullname","displayname","supportemail","phonenumber","address.buildingno","address.buildingname","address.floor","address.street","address.city","address.district","address.postalcode","address.state","address.country","products[]","allowedsellccy[]","allowedbuyccy[]","active"};
         return stringList;
     }
 
