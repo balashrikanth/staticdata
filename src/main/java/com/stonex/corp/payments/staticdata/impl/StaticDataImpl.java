@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -140,6 +141,29 @@ public class StaticDataImpl implements StaticDataDAL {
             e.printStackTrace();
         }
         return resultDocumentList;
+    }
+
+    @Override
+    public Document getSpecificRecord(boolean approved, String collectionName, String staticDataPK) {
+        if (!approved){
+            collectionName = collectionName.concat("_unapproved");
+        }
+
+        List<Document> aggregateDocList = new ArrayList<Document>();
+        Document document = new Document();
+        try {
+            MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
+            AggregateIterable<Document> resultDocument = collection.aggregate(Arrays.asList(new Document("$match", new Document("staticDataPK", staticDataPK))));
+            if (resultDocument.first()!=null){
+                document = resultDocument.first();
+                document.remove("staticDataPK");
+                document.remove("_id");
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return document;
     }
 
     @Override

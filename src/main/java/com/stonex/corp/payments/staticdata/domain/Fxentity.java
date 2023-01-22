@@ -51,7 +51,7 @@ public class Fxentity extends StaticData {
     //Implement this to identify which fields constitute primary key
     @Override
     public String getPK(){
-        return this.entityid;
+        return this.entityid.toUpperCase();//Key always upper case
     }
 
     //Implement this if you have to fill up other fields from main fields - denormalize scenario

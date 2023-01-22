@@ -22,7 +22,7 @@ public class PicklistController {
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
 
     @GetMapping("/all")
-    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId){
+    public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId){
         String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
@@ -35,8 +35,21 @@ public class PicklistController {
 
     }
 
+    @GetMapping("/specific/recordkey/{recordkey}")
+    public String getSpecificItem( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @PathVariable("recordkey") String recordkey){
+        String jsonContent = "";
+        AppReturnObject appReturnObject = new AppReturnObject();
+        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
+        //get all Approved
+        Document document = staticDataDAL.getSpecificRecord(true,staticDataFactory.getCollectionName(), recordkey.toUpperCase());//Key is always Uppercase
+        appReturnObject.PerformReturnArrayObject(document);
+        return appReturnObject.setReturnJSON();
+
+    }
+
+
     @PostMapping("/filtered")
-    public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
+    public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader("userid") String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved

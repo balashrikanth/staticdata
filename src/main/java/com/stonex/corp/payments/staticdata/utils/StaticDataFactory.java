@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
+import javax.print.Doc;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -143,6 +144,7 @@ public class StaticDataFactory {
     public Picklist getPickListHeaders(){
         return this.staticData.getPickListHeaders();
     }
+
 
     public List<String[]> getPickListFromDocument(List<Document> documentList){
         ArrayList<String[]> stringArrayList = new ArrayList<String[]>();

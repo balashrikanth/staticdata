@@ -48,7 +48,7 @@ public class Currency extends StaticData {
     //Implement this to identify which fields constitute primary key
     @Override
     public String getPK(){
-        return this.isocode;
+        return this.isocode.toUpperCase();//Key always upper case
     }
 
     //Implement this for extracting the object from mongo collection
