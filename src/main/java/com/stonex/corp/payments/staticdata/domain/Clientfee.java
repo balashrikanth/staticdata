@@ -3,14 +3,16 @@ package com.stonex.corp.payments.staticdata.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
-import com.stonex.corp.payments.staticdata.model.CurrencyFee;
+import com.stonex.corp.payments.staticdata.model.XCurrencyFee;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
+import org.bson.types.Decimal128;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -21,8 +23,8 @@ public class Clientfee extends StaticData {
     //KEEP ALL attributes in small case as reflection is used
     private String clientid;
     private String clientsellcurrencycode;
-    private float samecurrencyfee;
-    private List<CurrencyFee> clientbuycurrencies;
+    private double samecurrencyfee;
+    private List<XCurrencyFee> clientbuycurrencies;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
     //Implement this for which collection name is to be used

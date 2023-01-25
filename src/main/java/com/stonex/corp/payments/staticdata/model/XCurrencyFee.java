@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrencyFee {
+public class XCurrencyFee {
     private String currencycode;
-    private float exchangefee;
+    private double exchangefee;
+    private boolean active;
 }
