@@ -11,7 +11,6 @@ import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
 
-import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.bson.Document;
 import org.json.JSONException;
@@ -113,7 +112,7 @@ public class DetailInfoController {
     }
 
     @PostMapping("/edit")
-    public String edit( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String edit( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -125,6 +124,14 @@ public class DetailInfoController {
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }
+        if (staticDataFactory!=null){
+            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+            if (dbVersion!=version){
+                appError = versionMismatch(functionId);
+                appReturnObject.addError(appError);
+                return appReturnObject.setReturnJSON();
+            }
         }
         appError = validateDataDAL.validate(staticDataFactory,language);
         if (appError.getDetails().size()==0){
@@ -142,7 +149,7 @@ public class DetailInfoController {
 
     //Delete Unapproved is like Undo
     @PostMapping("/undo")
-    public String delete( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String delete( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language,@RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -154,6 +161,14 @@ public class DetailInfoController {
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }
+        if (staticDataFactory!=null){
+            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+            if (dbVersion!=version){
+                appError = versionMismatch(functionId);
+                appReturnObject.addError(appError);
+                return appReturnObject.setReturnJSON();
+            }
         }
         boolean  result = staticDataDAL.undo(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONDELETE,"");
@@ -167,7 +182,7 @@ public class DetailInfoController {
 
     //Delete Approved - creates a new unapproved and it is pending approval
     @PostMapping("/delete")
-    public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId,@RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId,@RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language,@RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -179,6 +194,14 @@ public class DetailInfoController {
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }
+        if (staticDataFactory!=null){
+            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+            if (dbVersion!=version){
+                appError = versionMismatch(functionId);
+                appReturnObject.addError(appError);
+                return appReturnObject.setReturnJSON();
+            }
         }
         Document d = staticDataDAL.deleteApproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(), jsonContent);
         StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONDELETE,"");
@@ -191,7 +214,7 @@ public class DetailInfoController {
     }
 
     @PostMapping("/approve")
-    public String approve(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader("remark") String approveRemark, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+    public String approve(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader("remark") String approveRemark, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestHeader(value = "version", defaultValue = "1") int version,@RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -203,6 +226,14 @@ public class DetailInfoController {
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }
+        if (staticDataFactory!=null){
+            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+            if (dbVersion!=version){
+                appError = versionMismatch(functionId);
+                appReturnObject.addError(appError);
+                return appReturnObject.setReturnJSON();
+            }
         }
         Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         if (docunapproved==null){
@@ -292,6 +323,13 @@ public class DetailInfoController {
         return appError;
     }
 
+    public AppError versionMismatch(String functionId){
+        AppError appError = new AppError();
+        HashMap<String, String> hashMap = new HashMap<String,String>();
+        hashMap.put("%%MESSAGE%%", "Another user has updated the record in the meantime");
+        appError.addErrorItem(errorDataDAL.getErrorItem("en","ENC9999",functionId,hashMap));
+        return appError;
+    }
 
 
 

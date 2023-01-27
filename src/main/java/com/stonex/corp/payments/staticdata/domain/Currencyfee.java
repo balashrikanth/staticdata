@@ -29,7 +29,7 @@ public class Currencyfee extends StaticData {
     //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
-        return SystemFieldConfig.ENTITYPREFIX+ "clientfee";
+        return SystemFieldConfig.ENTITYPREFIX+ "currencyfee";
     }
     //Implement this to form the primary key - also known as staticDataPK.
     @Override

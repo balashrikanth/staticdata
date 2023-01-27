@@ -30,4 +30,5 @@ public interface StaticDataDAL {
     public StaticDataMetaInfoDB saveMetaData(String staticDataPK, String collectionName, String userId, String action, String approveRemark);
     public StaticDataMetaInfoDB getMetaData(String staticDataPK, String collectionName);
     public StaticDataAuditDB saveAuditData(String staticDataPK, String functionId, String collectionName,String content, StaticDataMetaInfoDB staticDataMetaInfoDB);
+    public int getLastVersion(String staticDataPK, String collectionName);
 }

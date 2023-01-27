@@ -432,4 +432,14 @@ public class StaticDataImpl implements StaticDataDAL {
 
     }
 
+    @Override
+    public int getLastVersion(String staticDataPK, String collectionName) {
+        int counter = 0;
+        StaticDataMetaInfoDB staticDataMetaInfoDB = this.staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataPK,collectionName);
+        if (staticDataMetaInfoDB!=null && staticDataMetaInfoDB.getVersion()>0){
+            counter = staticDataMetaInfoDB.getVersion();
+        }
+        return counter;
+    }
+
 }
