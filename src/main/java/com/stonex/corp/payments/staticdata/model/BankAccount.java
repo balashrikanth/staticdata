@@ -12,9 +12,10 @@ import java.util.List;
 public class BankAccount {
     private String deliveryname;//Easy to identify name
     private String currency;
+    private String country;
     private String iban;
     private String accountnumber;
-    private Owner owner;
+    private String accountname;
     private String accountnumbertype;
     private String reference;
     private String bicfi;//BIC Code - SWIFT

@@ -9,25 +9,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Entitybankaccount extends StaticData {
+public class Stonexbankaccount extends StaticData {
     //KEEP ALL attributes in small case as reflection is used
     private String entityid;
     private String sellcurrencycode;
-    private List<BankAccount> bankAccounts;
+    private List<BankAccount> bankaccounts;
     private String defaultdeliveryname;//which of the bank accounts in the list is the default
+    private String defaultoperatingaccount;//Which is the operating account
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
 
     //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
-        return SystemFieldConfig.ENTITYPREFIX+"entitybankaccount";
+        return SystemFieldConfig.ENTITYPREFIX+"stonexbankaccount";
     }
     //Implement this to form the primary key - also known as staticDataPK.
     @Override
@@ -35,8 +35,8 @@ public class Entitybankaccount extends StaticData {
         String returnValue ="";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Entitybankaccount entitybankaccount = objectMapper.readValue(content, Entitybankaccount.class);
-            returnValue = entitybankaccount.getEntityid().concat(entitybankaccount.getSellcurrencycode());
+            Stonexbankaccount stonexbankaccount = objectMapper.readValue(content, Stonexbankaccount.class);
+            returnValue = stonexbankaccount.getEntityid().concat(stonexbankaccount.getSellcurrencycode());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -57,15 +57,15 @@ public class Entitybankaccount extends StaticData {
 
     //Implement this for extracting the object from mongo collection
     @Override
-    public Entitybankaccount getObjectFromDocument(Document document){
+    public Stonexbankaccount getObjectFromDocument(Document document){
         ObjectMapper objectMapper = new ObjectMapper();
-        Entitybankaccount entitybankaccount = new Entitybankaccount();
+        Stonexbankaccount stonexbankaccount = new Stonexbankaccount();
         try {
-            entitybankaccount = objectMapper.readValue(document.toJson(), Entitybankaccount.class);
+            stonexbankaccount = objectMapper.readValue(document.toJson(), Stonexbankaccount.class);
         } catch (Exception e){
             e.printStackTrace();
         }
-        return entitybankaccount;
+        return stonexbankaccount;
     }
 
     //Implement this for picklist columns for this collection
@@ -100,7 +100,7 @@ public class Entitybankaccount extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"entityid","sellcurrencycode","bankAccounts[]","defaultdeliveryname","active"};
+        String [] stringList = new String[]{"entityid","sellcurrencycode","bankAccounts[]","defaultdeliveryname","defaultoperatingaccount","active"};
         return stringList;
     }
 
