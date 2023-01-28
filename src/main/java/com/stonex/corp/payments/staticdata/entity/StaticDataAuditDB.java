@@ -1,14 +1,10 @@
 package com.stonex.corp.payments.staticdata.entity;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.stonex.corp.payments.staticdata.domain.Country;
 import com.stonex.corp.payments.staticdata.model.ChangeInfo;
-import com.stonex.corp.payments.staticdata.model.StaticData;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +15,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -116,16 +111,17 @@ public class StaticDataAuditDB {
             int arrayCount = StringUtils.countMatches(label,"[]");
             JsonObject partialobject = new JsonObject();
             if (elementCount>0 && arrayCount>0 ){
-                //If both inner element is found and the last element is array
-                String[] labelSets = label.split("\\.");
-                for (int i=0;i<=elementCount;i++){
-                    if (i==elementCount){
-                        String splitlabel = labelSets[i].split("\\[")[0];
-                        returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
-                    } else {
-                        partialobject = gsonJsonObject.getAsJsonObject(labelSets[i]);
+                    System.out.println("Inner and Array with Array Last");
+                    //If both inner element and Array is found and the last one is array
+                    String[] labelSets = label.split("\\.");
+                    for (int i=0;i<=elementCount;i++){
+                        if (i==elementCount){
+                            String splitlabel = labelSets[i].split("\\[")[0];
+                            returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
+                        } else {
+                            partialobject = gsonJsonObject.getAsJsonObject(labelSets[i]);
+                        }
                     }
-                }
             } else if (elementCount > 0) {
                 //If only inner element is found
                 String[] labelSets = label.split("\\.");
@@ -137,9 +133,12 @@ public class StaticDataAuditDB {
                     }
                 }
             } else if (arrayCount>0){
-                //If only array found
+                //If only array found - iterate through all items in array
                 String splitlabel = label.split("\\[")[0];
-                returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
+                returnValue = "";
+                for (int i=0;i<gsonJsonObject.getAsJsonArray(splitlabel).size();i++){
+                    returnValue = returnValue+gsonJsonObject.getAsJsonArray(splitlabel).get(i).getAsJsonObject().toString();
+                }
             }
             else {
                 //simple element

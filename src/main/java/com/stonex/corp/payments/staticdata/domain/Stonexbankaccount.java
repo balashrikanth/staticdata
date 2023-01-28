@@ -100,7 +100,7 @@ public class Stonexbankaccount extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"entityid","sellcurrencycode","bankAccounts[]","defaultdeliveryname","defaultoperatingaccount","active"};
+        String [] stringList = new String[]{"entityid","sellcurrencycode","bankaccounts[]","defaultdeliveryname","defaultoperatingaccount","active"};
         return stringList;
     }
 
