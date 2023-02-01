@@ -121,6 +121,7 @@ public class StaticDataFactory {
 
 
 
+
     public Picklist getPickListHeaders(){
         return this.staticData.getPickListHeaders();
     }
@@ -134,6 +135,7 @@ public class StaticDataFactory {
         }
         return stringArrayList;
     }
+
 
     @JsonIgnore
     public String[] getLabels(){

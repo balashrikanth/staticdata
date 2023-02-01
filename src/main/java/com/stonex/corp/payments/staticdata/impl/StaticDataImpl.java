@@ -144,6 +144,21 @@ public class StaticDataImpl implements StaticDataDAL {
     }
 
     @Override
+    public  MongoCollection<Document> getAllAsReport(boolean approved, String collectionName) {
+        if (!approved){
+            collectionName = collectionName.concat("_unapproved");
+        }
+
+        try {
+            MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
+            return  collection;
+        } catch (Exception e){
+            e.printStackTrace();
+            return  null;
+        }
+    }
+
+    @Override
     public Document getSpecificRecord(boolean approved, String collectionName, String staticDataPK) {
         if (!approved){
             collectionName = collectionName.concat("_unapproved");

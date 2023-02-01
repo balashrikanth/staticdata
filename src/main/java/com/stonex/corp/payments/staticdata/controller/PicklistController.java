@@ -43,7 +43,9 @@ public class PicklistController {
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
         Document document = staticDataDAL.getSpecificRecord(true,staticDataFactory.getCollectionName(), recordkey.toUpperCase());//Key is always Uppercase
-        appReturnObject.PerformReturnArrayObject(document);
+        if (document!=null){
+            appReturnObject.PerformReturnArrayObject(document);
+        }
         return appReturnObject.setReturnJSON();
 
     }

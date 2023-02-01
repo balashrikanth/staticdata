@@ -15,6 +15,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Data
@@ -88,9 +89,13 @@ public class StaticDataAuditDB {
             changeInfo.setFieldName(s);
             if (this.oldcontent!=null){
                 changeInfo.setOldValue(getRecursiveElement(this.oldcontent,s));
+                //System.out.println("OLD STRING");
+               // iterateJSONString(this.oldcontent,s);
             }
             if (this.newcontent!=null){
                 changeInfo.setNewValue(getRecursiveElement(this.newcontent,s));
+               // System.out.println("NEW STRING");
+               // iterateJSONString(this.newcontent,s);
             }
             if (changeInfo.getOldValue()!=null && changeInfo.getNewValue()!=null){
                 if (!changeInfo.getOldValue().trim().equalsIgnoreCase(changeInfo.getNewValue().trim())){
@@ -149,4 +154,20 @@ public class StaticDataAuditDB {
         }
         return  returnValue;
     }
+
+    public void iterateJSONString(String labelContent, String label){
+        try {
+            JSONObject jsonObject = new JSONObject(labelContent.trim());
+            Iterator<?> keys = jsonObject.keys();
+            while (keys.hasNext()){
+                String key = (String) keys.next();
+                if (jsonObject.get(key) instanceof JSONObject){
+                    System.out.println(jsonObject.toString());
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -2,6 +2,8 @@ package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.XCurrencyFee;
 import com.stonex.corp.payments.staticdata.model.Picklist;
@@ -11,8 +13,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.bson.types.Decimal128;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -64,6 +70,51 @@ public class Clientfee extends StaticData {
         }
         return clientfee;
     }
+    //Implement this for Report view in Summary.
+
+    @JsonIgnore
+    @Override
+    public String getReportTitle(){
+        return "CLIENT FEE LIST";
+    }
+    //Implement this for Report view in Summary.
+    @JsonIgnore
+    @Override
+    public String getReportHeader(){
+        HashMap<String,String> headerMap= new HashMap<String,String>();
+        headerMap.put("clientid","CLIENT ID");
+        headerMap.put("clientsellcurrencycode","SELL CURRENCY");
+        headerMap.put("samecurrencyfee","SAME CURRRENCY FEE");
+        headerMap.put("clientbuycurrencies_currencycode","BUY CURRENCY");
+        headerMap.put("clientbuycurrencies_exchangefee","EXCHANGE FEE");
+        headerMap.put("active","ACTIVE");
+        JSONObject jsonObject = new JSONObject(headerMap);
+        return jsonObject.toString();
+    }
+    //Implement this for Report view in Summary.
+    @JsonIgnore
+    @Override
+    public String getReportFooter(){
+        return "** END OF REPORT **";
+    }
+
+    //Implement this for Report view in Summary.
+    @JsonIgnore
+    @Override
+    public List<Document> getReportData(MongoCollection<Document> collection){
+        List<Document> documentList = new ArrayList<Document>();
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$unwind",
+                new Document("path", "$clientbuycurrencies"))));
+        for (Document document1 : result){
+            document1.remove("_id");
+            document1.remove("staticDataPK");
+            documentList.add(document1);
+        }
+        return documentList;
+    }
+
+
+
 
     //Implement this for picklist columns for this collection
     @Override

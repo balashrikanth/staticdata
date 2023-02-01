@@ -1,19 +1,25 @@
 package com.stonex.corp.payments.staticdata.controller;
 
+import com.github.wnameless.json.flattener.JsonFlattener;
+import com.mongodb.client.MongoCollection;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
+import com.stonex.corp.payments.staticdata.dto.ReportView;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.model.Audit;
-import com.stonex.corp.payments.staticdata.model.StaticData;
 import com.stonex.corp.payments.staticdata.model.StaticDataWithAudit;
-import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.bson.Document;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -34,18 +40,19 @@ public class SummaryInfoController {
         for (Document d : documentList){
             StaticDataFactory staticDataFactory1 = new StaticDataFactory(functionId, d.toJson());
             StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.getMetaData(staticDataFactory1.getPKValue(),staticDataFactory1.getCollectionName());
-            Audit audit = new Audit();
-            StaticDataWithAudit staticDataWithAudit;
-            try {
-                audit = staticDataMetaInfoDB.getLastAudit();
-                 staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
-            } catch (Exception e){
-                e.printStackTrace();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
+            if (staticDataMetaInfoDB!=null){
+                Audit audit = new Audit();
+                StaticDataWithAudit staticDataWithAudit;
+                try {
+                    audit = staticDataMetaInfoDB.getLastAudit();
+                    staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
 
+                }
+                staticDataWithAuditList.add(staticDataWithAudit);
             }
-            staticDataWithAuditList.add(staticDataWithAudit);
-
         }
         appReturnObject.PerformReturnArrayObject(staticDataWithAuditList);
         return appReturnObject.setReturnJSON();
@@ -61,16 +68,18 @@ public class SummaryInfoController {
         for (Document d : documentList){
             StaticDataFactory staticDataFactory1 = new StaticDataFactory(functionId, d.toJson());
             StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.getMetaData(staticDataFactory1.getPKValue(),staticDataFactory1.getCollectionName());
-            Audit audit = new Audit();
-            StaticDataWithAudit staticDataWithAudit;
-            try {
-                audit = staticDataMetaInfoDB.getLastAudit();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
-            } catch (Exception e){
-                e.printStackTrace();
-                staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
+            if (staticDataMetaInfoDB!=null){
+                Audit audit = new Audit();
+                StaticDataWithAudit staticDataWithAudit;
+                try {
+                    audit = staticDataMetaInfoDB.getLastAudit();
+                    staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
+                }
+                staticDataWithAuditList.add(staticDataWithAudit);
             }
-            staticDataWithAuditList.add(staticDataWithAudit);
         }
         appReturnObject.PerformReturnArrayObject(staticDataWithAuditList);
         return appReturnObject.setReturnJSON();
@@ -82,9 +91,61 @@ public class SummaryInfoController {
         AppReturnObject appReturnObject = new AppReturnObject();
         long counter=0;
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
-        counter = staticDataDAL.getCount(approved,staticDataFactory.getCollectionName());
+        try {
+            counter = staticDataDAL.getCount(approved,staticDataFactory.getCollectionName());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return counter;
 
     }
 
+    @GetMapping("/report")
+    public String getSummaryReport(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId) {
+        AppReturnObject appReturnObject = new AppReturnObject();
+        ReportView reportView = new ReportView();
+        StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
+        List<Document> documentList = new ArrayList<Document>();
+        List<String> reportList = new ArrayList<String>();
+        MongoCollection<Document> documentMongoCollection = staticDataDAL.getAllAsReport(approved,staticDataFactory.getCollectionName());
+        reportView.setTitle(staticDataFactory.getStaticData().getReportTitle());
+        reportView.setHeader(staticDataFactory.getStaticData().getReportHeader());
+        if (documentMongoCollection.countDocuments()>0){
+            documentList = staticDataFactory.getStaticData().getReportData(documentMongoCollection);
+        }
+        JsonWriterSettings settings = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
+        for (Document d : documentList){
+            String reportline = JsonFlattener.flatten(d.toJson());
+            JSONObject jsonObject = new JSONObject(reportline);
+            reportline = normalize(jsonObject).toString();
+            reportList.add(reportline);
+        }
+        //appReturnObject.PerformReturnArrayObject(reportList);
+        reportView.setBody(reportList.toString());
+        reportView.setFooter(staticDataFactory.getStaticData().getReportFooter());
+        appReturnObject.PerformReturnArrayObject(reportView);
+        return appReturnObject.setReturnJSON();
+    }
+
+    static JSONObject normalize(JSONObject object) throws JSONException {
+        JSONObject result = new JSONObject();
+        Iterator iterator = object.keys();
+
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            String normalizedKey = key.replace(".", "_");
+
+            Object inner = object.get(key);
+
+            if (inner instanceof JSONObject) {
+                result.put(normalizedKey, normalize((JSONObject) inner));
+            } else if (inner instanceof String) {
+                result.put(normalizedKey, object.getString(key).replace("&", "_"));
+            } else {
+                result.put(normalizedKey, inner);
+            }
+        }
+
+        return result;
+    }
 }

@@ -2,6 +2,7 @@ package com.stonex.corp.payments.staticdata.dal;
 
 
 
+import com.mongodb.client.MongoCollection;
 import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.model.PageInfo;
@@ -15,6 +16,7 @@ public interface StaticDataDAL {
     public List<Document> getFiltered(boolean approved, String collectionName,  String filterJSONString);
     public List<Document> getFilteredPartialApproved(String collectionName,  String filterJSONString);
     public List<Document> getAll(boolean approved, String collectionName);
+    public MongoCollection<Document> getAllAsReport(boolean approved,  String collectionName);
     public Document getSpecificRecord(boolean approved, String collectionName, String staticDataPK);
     public List<Document> getAllActive(boolean approved, String collectionName);
     public long getCount(boolean approved, String collectionName);

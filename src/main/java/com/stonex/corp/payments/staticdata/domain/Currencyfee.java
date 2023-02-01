@@ -2,6 +2,8 @@ package com.stonex.corp.payments.staticdata.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.model.XCurrencyFee;
 import com.stonex.corp.payments.staticdata.model.Picklist;
@@ -13,6 +15,8 @@ import org.bson.Document;
 import org.bson.types.Decimal128;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -62,6 +66,21 @@ public class Currencyfee extends StaticData {
             e.printStackTrace();
         }
         return currencyfee;
+    }
+
+    //Implement this for Report view in Summary.
+    @Override
+    public List<Document> getReportData(MongoCollection<Document> collection){
+        List<Document> documentList = new ArrayList<Document>();
+        //Then the entire result set
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$unwind",
+                new Document("path", "$clientbuycurrencies"))));
+        for (Document document : result){
+            document.remove("_id");
+            document.remove("staticDataPK");
+            documentList.add(document);
+        }
+        return documentList;
     }
 
     //Implement this for picklist columns for this collection
