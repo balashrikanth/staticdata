@@ -1,6 +1,5 @@
 package com.stonex.corp.payments.staticdata.model;
 
-import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

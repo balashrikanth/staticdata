@@ -152,27 +152,42 @@ public class ValidateDataImpl implements ValidateDataDAL {
                         if (fieldAttributes.getDatatype()!=null && fieldAttributes.getMinlength()>0 && fieldAttributes.getMaxlength()>0){
                             switch(fieldAttributes.getDatatype().trim().toUpperCase()){
                                 case "STRING":
-                                    fieldValue = o.toString().length();
+                                    try {
+                                        fieldValue = o.toString().length();
+                                    } catch (NullPointerException exception){
+
+                                    }
+                                    catch (Exception e){
+                                        //e.printStackTrace();
+                                    }
                                     break;
                                 case "INTEGER":
                                     try {
                                         fieldValue = (int) o;
-                                    } catch (Exception e){
+                                    } catch (NullPointerException exception){
+
+                                    }catch (Exception e){
+                                        //e.printStackTrace();
                                     }
                                     break;
                                 case "FLOAT":
                                     try {
                                         Float floatValue = (Float) o;
                                         fieldValue = Math.round(floatValue);
-                                    } catch (Exception e){
+                                    } catch (NullPointerException exception){
+
+                                    }catch (Exception e){
+                                        //e.printStackTrace();
                                     }
                                     break;
                                 case "DOUBLE":
                                     try {
                                         Double doubleValue = (Double) o;
                                         fieldValue = doubleValue.intValue();
+                                    }catch (NullPointerException exception){
+
                                     } catch (Exception e){
-                                        e.printStackTrace();
+                                       // e.printStackTrace();
                                     }
                                     break;
                                 default:

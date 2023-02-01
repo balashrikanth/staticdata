@@ -29,6 +29,8 @@ public class Currencyfee extends StaticData {
     private double samecurrencyfee;
     private List<XCurrencyFee> clientbuycurrencies;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
+    @JsonIgnore
+    static final String clientsellcurrencycodetag = "clientsellcurrencycode";
 
     //Implement this for which collection name is to be used
     @Override
@@ -42,7 +44,7 @@ public class Currencyfee extends StaticData {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Currencyfee currencyfee = objectMapper.readValue(content, Currencyfee.class);
-            returnValue = getClientsellcurrencycode();
+            returnValue = currencyfee.getClientsellcurrencycode();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -71,7 +73,7 @@ public class Currencyfee extends StaticData {
     //Implement this for Report view in Summary.
     @Override
     public List<Document> getReportData(MongoCollection<Document> collection){
-        List<Document> documentList = new ArrayList<Document>();
+        List<Document> documentList = new ArrayList<>();
         //Then the entire result set
         AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$unwind",
                 new Document("path", "$clientbuycurrencies"))));
@@ -89,7 +91,7 @@ public class Currencyfee extends StaticData {
         Picklist picklist = new Picklist();
         picklist.setNoOfCols(1);//As set below
         String [] headers = new String[1];
-        headers[1] = "clientsellcurrencycode";
+        headers[1] = clientsellcurrencycodetag;
         picklist.setPickListHeaders(headers);
         return picklist;
     }
@@ -97,8 +99,8 @@ public class Currencyfee extends StaticData {
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA"};
-        if (document.get("clientsellcurrencycode")!=null){
-            picklistcols[0] = document.get("clientsellcurrencycode").toString();
+        if (document.get(clientsellcurrencycodetag)!=null){
+            picklistcols[0] = document.get(clientsellcurrencycodetag).toString();
         }
         return picklistcols;
     }
@@ -107,8 +109,8 @@ public class Currencyfee extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"clientsellcurrencycode","samecurrencyfee","clientbuycurrencies[]","active"};
-        return stringList;
+        return new String[]{clientsellcurrencycodetag,"samecurrencyfee","clientbuycurrencies[]","active"};
+
     }
 
 

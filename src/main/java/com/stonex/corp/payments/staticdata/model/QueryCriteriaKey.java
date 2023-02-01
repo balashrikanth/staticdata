@@ -21,10 +21,10 @@ public class QueryCriteriaKey {
         this.operator = "EQ";
     }
 
-    public QueryCriteriaKey(String criteriaKey, GenericValue genericValue, String valueDataType) {
+    public QueryCriteriaKey(String criteriaKey, GenericValue genericValue, String operator) {
         this.criteriaKey = criteriaKey;
         this.genericValue = genericValue;
-        this.operator = "EQ";
+        this.operator = operator;
 
     }
 

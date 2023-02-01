@@ -64,22 +64,25 @@ public class StaticDataFactory {
             e.printStackTrace();
         }
     }
+    //Used for automatically applying validation to fields based on staticdata validation
     public HashMap<String,Object> getFields(){
-        HashMap<String,Object> fieldValueMap = new HashMap<String,Object>();
+        HashMap<String,Object> fieldValueMap = new HashMap<>();
         Field[] fields = this.staticData.getClass().getDeclaredFields();
         for (Field field : fields){
             try {
                 Class<?> fieldType = field.getType();
-                //We skip Boolean and Complex Data Type fields
-                if (fieldType.getName().equalsIgnoreCase("java.lang.String")|| fieldType.getName().equalsIgnoreCase("int")){
-                    Method method = this.staticData.getClass().getMethod("get"+field.getName()
+                //We skip Boolean and Complex Data Type fields for now
+                if (fieldType.getName().equalsIgnoreCase("java.lang.String") || fieldType.getName().equalsIgnoreCase("int")) {
+                    Method method = this.staticData.getClass().getMethod("get" + field.getName()
                             .replaceFirst(field.getName().substring(0, 1), field.getName()
                                     .substring(0, 1).toUpperCase()));
                     Object o = method.invoke(this.staticData);
-                    if (o!=null){
-                        fieldValueMap.put(field.getName(),o);
+                    if (o != null) {
+                        fieldValueMap.put(field.getName(), o);
                     }
                 }
+            } catch (NoSuchMethodException e){
+                //We skip those objects that are of JsonIgnore type as there is no need to validate
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -95,7 +98,7 @@ public class StaticDataFactory {
     }
 
     public ArrayList<String> getJSONFromDocument(List<Document> documentList){
-        ArrayList<String> stringArrayList = new ArrayList<String>();
+        ArrayList<String> stringArrayList = new ArrayList<>();
         for (Document d :documentList){
             String s = staticData.getJSONString(d);
             stringArrayList.add(s);
@@ -111,8 +114,7 @@ public class StaticDataFactory {
         Audit audit = new Audit();
         try {
              audit = staticDataMetaInfoDB.getLastAudit();
-            StaticDataWithAudit staticDataWithAudit = new StaticDataWithAudit(staticData1,audit);
-            return staticDataWithAudit;
+            return new StaticDataWithAudit(staticData1,audit);
         } catch (Exception e){
             e.printStackTrace();
             return staticData1;
@@ -128,7 +130,7 @@ public class StaticDataFactory {
 
 
     public List<String[]> getPickListFromDocument(List<Document> documentList){
-        ArrayList<String[]> stringArrayList = new ArrayList<String[]>();
+        ArrayList<String[]> stringArrayList = new ArrayList<>();
         //instantiate a picklist
         for (Document d : documentList){
             stringArrayList.add(this.staticData.getPickListRow(d));

@@ -3,8 +3,10 @@ package com.stonex.corp.payments.staticdata.controller;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
+import com.stonex.corp.payments.staticdata.entity.TemplateDB;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
+import com.stonex.corp.payments.staticdata.repository.TemplateDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,11 @@ public class PicklistController {
     StaticDataDAL staticDataDAL;
     @Autowired
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
+    @Autowired
+    TemplateDBRepository templateDBRepository;
 
     @GetMapping("/all")
     public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId){
-        String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
@@ -38,7 +41,6 @@ public class PicklistController {
 
     @GetMapping("/specific/function/{functionid}/recordkey/{recordkey}")
     public String getSpecificItemByFunctionAndKey( @PathVariable("functionid") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @PathVariable("recordkey") String recordkey){
-        String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
@@ -48,6 +50,24 @@ public class PicklistController {
         }
         return appReturnObject.setReturnJSON();
 
+    }
+
+    @GetMapping("/template/keytype/{keytype}")
+    public String getNotificationKeys(@PathVariable("keytype") String keytype){
+        AppReturnObject appReturnObject = new AppReturnObject();
+        List<TemplateDB> templateDBList = templateDBRepository.findAllByTemplatetypeAndActive(keytype,true);
+        if (!templateDBList.isEmpty()){
+            Picklist picklist = new Picklist();
+            picklist.setNoOfCols(1);
+            picklist.setPickListHeaders(new String[]{"Allowed Keys"});;
+            for (TemplateDB templateDB : templateDBList){
+                if (templateDB.getKey()!=null){
+                    picklist.addSingleRow(new String[]{templateDB.getKey()});
+                }
+            }
+            appReturnObject.PerformReturnArrayObject(picklist);
+        }
+        return appReturnObject.setReturnJSON();
     }
 
     @PostMapping("/filtered")

@@ -28,7 +28,12 @@ public class Cutoffmaintenance extends StaticData {
     private int stonexreceivelegsettlementday;
     private String stonexreceivelegcutofftime;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
-
+    @JsonIgnore
+    static final String currencycodetag = "currencycode";
+    @JsonIgnore
+    static final String entityidtag = "entityid";
+    @JsonIgnore
+    static final String localtimezonetag = "localtimezone";
     //Implement this for which collection name is to be used
     @Override
     public String getCollectionName(){
@@ -73,9 +78,9 @@ public class Cutoffmaintenance extends StaticData {
         Picklist picklist = new Picklist();
         picklist.setNoOfCols(3);//As set below
         String [] headers = new String[3];
-        headers[0] = "currencycode";
-        headers[1] = "entityid";
-        headers[2] = "localtimezone";
+        headers[0] = currencycodetag;
+        headers[1] = entityidtag;
+        headers[2] = localtimezonetag;
         picklist.setPickListHeaders(headers);
         return picklist;
     }
@@ -83,14 +88,14 @@ public class Cutoffmaintenance extends StaticData {
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get("currencycode")!=null){
-            picklistcols[0] = document.get("currencycode").toString();
+        if (document.get(currencycodetag)!=null){
+            picklistcols[0] = document.get(currencycodetag).toString();
         }
-        if (document.get("entityid")!=null){
-            picklistcols[1] = document.get("entityid").toString();
+        if (document.get(entityidtag)!=null){
+            picklistcols[1] = document.get(entityidtag).toString();
         }
-        if (document.get("localtimezone")!=null){
-            picklistcols[2] = document.get("localtimezone").toString();
+        if (document.get(localtimezonetag)!=null){
+            picklistcols[2] = document.get(localtimezonetag).toString();
         }
         return picklistcols;
     }
@@ -99,8 +104,7 @@ public class Cutoffmaintenance extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"currencycode","entityid","localtimezone","externalpaylegsettlementday","externalpaylegcutofftime","stonexpaylegsettlementday","stonexpaylegcutofftime","externalreceivelegsettlementday","externalreceivelegcutofftime","stonexreceivelegsettlementday","stonexreceivelegcutofftime","active"};
-        return stringList;
+        return new String[]{currencycodetag,entityidtag,localtimezonetag,"externalpaylegsettlementday","externalpaylegcutofftime","stonexpaylegsettlementday","stonexpaylegcutofftime","externalreceivelegsettlementday","externalreceivelegcutofftime","stonexreceivelegsettlementday","stonexreceivelegcutofftime","active"};
     }
 
 

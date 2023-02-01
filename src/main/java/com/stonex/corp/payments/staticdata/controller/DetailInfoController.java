@@ -48,7 +48,7 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
@@ -65,7 +65,7 @@ public class DetailInfoController {
                 //if there is a past Static Meta data record already available because of create and delete and then fresh create - reuse it else create new.
                 StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONNEW,"");
                 //Audit Old and New
-                StaticDataAuditDB staticDataAuditDB = staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
+                staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
 
                 //Complete
                 appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDB,d));
@@ -90,7 +90,8 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        jsonContent=staticDataFactory.getContent();
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
@@ -120,18 +121,18 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }else {
+            jsonContent = staticDataFactory.getContent();
         }
-        if (staticDataFactory!=null){
-            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
-            if (dbVersion!=version){
-                appError = versionMismatch(functionId);
-                appReturnObject.addError(appError);
-                return appReturnObject.setReturnJSON();
-            }
+        int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+        if (dbVersion!=version){
+            appError = versionMismatch(functionId);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
         }
         appError = validateDataDAL.validate(staticDataFactory,language);
         if (appError.getDetails().size()==0){
@@ -139,7 +140,7 @@ public class DetailInfoController {
             StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONEDIT,"");
 
             //Audit Old and New
-            StaticDataAuditDB staticDataAuditDB = staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
+            staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
             appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDB,d));
         } else {
             appReturnObject.addError(appError);
@@ -157,24 +158,24 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }else {
+            jsonContent = staticDataFactory.getContent();
         }
-        if (staticDataFactory!=null){
-            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
-            if (dbVersion!=version){
-                appError = versionMismatch(functionId);
-                appReturnObject.addError(appError);
-                return appReturnObject.setReturnJSON();
-            }
+        int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+        if (dbVersion!=version){
+            appError = versionMismatch(functionId);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
         }
         boolean  result = staticDataDAL.undo(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONDELETE,"");
 
         //Audit Old and New
-        StaticDataAuditDB staticDataAuditDB = staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
+       staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
 
         appReturnObject.PerformReturnObject(result);
         return appReturnObject.setReturnJSON();
@@ -190,24 +191,24 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }else {
+            jsonContent = staticDataFactory.getContent();
         }
-        if (staticDataFactory!=null){
-            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
-            if (dbVersion!=version){
-                appError = versionMismatch(functionId);
-                appReturnObject.addError(appError);
-                return appReturnObject.setReturnJSON();
-            }
+        int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+        if (dbVersion!=version){
+            appError = versionMismatch(functionId);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
         }
         Document d = staticDataDAL.deleteApproved(staticDataFactory.getCollectionName(),staticDataFactory.getPKValue(), jsonContent);
         StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataDAL.saveMetaData(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),userId,SystemFieldConfig.ACTIONDELETE,"");
 
         //Audit Old and New
-        StaticDataAuditDB staticDataAuditDB = staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
+        staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB);
 
         appReturnObject.PerformReturnObject(staticDataFactory.getObjectFromDocument(staticDataMetaInfoDB,d));
         return appReturnObject.setReturnJSON();
@@ -222,18 +223,18 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        if (staticDataFactory!=null&&staticDataFactory.getStaticData()==null){
+        if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
             return appReturnObject.setReturnJSON();
+        }else {
+            jsonContent = staticDataFactory.getContent();
         }
-        if (staticDataFactory!=null){
-            int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
-            if (dbVersion!=version){
-                appError = versionMismatch(functionId);
-                appReturnObject.addError(appError);
-                return appReturnObject.setReturnJSON();
-            }
+        int dbVersion = this.staticDataDAL.getLastVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
+        if (dbVersion!=version){
+            appError = versionMismatch(functionId);
+            appReturnObject.addError(appError);
+            return appReturnObject.setReturnJSON();
         }
         Document docunapproved = staticDataDAL.findRecord(false,staticDataFactory.getCollectionName(),staticDataFactory.getPKValue());
         if (docunapproved==null){
@@ -246,7 +247,7 @@ public class DetailInfoController {
                 appError = new AppError();
                 appError.addErrorItem(errorDataDAL.getErrorItem(language,"ESD9002",functionId));
                 appReturnObject.addError(appError);
-            } else if (staticDataMetaInfoDB !=null && staticDataMetaInfoDB.getLastAudit().getCreatorId().equalsIgnoreCase(userId)){
+            } else if ( staticDataMetaInfoDB.getLastAudit().getCreatorId().equalsIgnoreCase(userId)){
                 //Approver cannot be same as creator
                 appError = new AppError();
                 appError.addErrorItem(errorDataDAL.getErrorItem(language,"ESD9002",functionId));
@@ -280,7 +281,7 @@ public class DetailInfoController {
                             break;
                     }
                     //Audit Old and New
-                    StaticDataAuditDB staticDataAuditDB = staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB1);
+                    staticDataDAL.saveAuditData(staticDataFactory.getPKValue(),functionId,staticDataFactory.getCollectionName(),jsonContent,staticDataMetaInfoDB1);
 
 
                 } else {
@@ -308,26 +309,26 @@ public class DetailInfoController {
             new JSONObject(json);
         } catch (JSONException e) {
             appError = new AppError();
-            HashMap<String, String> hashMap = new HashMap<String,String>();
-            hashMap.put("%%MESSAGE%%", "Invalid PayLoad Data");
-            appError.addErrorItem(errorDataDAL.getErrorItem("en","ENC9999",functionId,hashMap));
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put(SystemFieldConfig.MESSAGECODEWORD, "Invalid PayLoad Data");
+            appError.addErrorItem(errorDataDAL.getErrorItem("en",SystemFieldConfig.DEFAULTERRORCODE,functionId,hashMap));
         }
         return appError;
     }
 
     public AppError incorrectStructure(String functionId){
         AppError appError = new AppError();
-        HashMap<String, String> hashMap = new HashMap<String,String>();
-        hashMap.put("%%MESSAGE%%", "Incorrect Structure of Payload data");
-        appError.addErrorItem(errorDataDAL.getErrorItem("en","ENC9999",functionId,hashMap));
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(SystemFieldConfig.MESSAGECODEWORD, "Incorrect Structure of Payload data");
+        appError.addErrorItem(errorDataDAL.getErrorItem("en",SystemFieldConfig.DEFAULTERRORCODE,functionId,hashMap));
         return appError;
     }
 
     public AppError versionMismatch(String functionId){
         AppError appError = new AppError();
-        HashMap<String, String> hashMap = new HashMap<String,String>();
-        hashMap.put("%%MESSAGE%%", "Another user has updated the record in the meantime");
-        appError.addErrorItem(errorDataDAL.getErrorItem("en","ENC9999",functionId,hashMap));
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(SystemFieldConfig.MESSAGECODEWORD, "Another user has updated the record in the meantime");
+        appError.addErrorItem(errorDataDAL.getErrorItem("en",SystemFieldConfig.DEFAULTERRORCODE,functionId,hashMap));
         return appError;
     }
 

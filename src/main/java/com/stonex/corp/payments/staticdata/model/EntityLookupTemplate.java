@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClearingSystemId {
-    private String clearingsystemid;
-    private String clearingsystemmemberid;
+public class EntityLookupTemplate {
+    private String key;
+    private String value;
 }

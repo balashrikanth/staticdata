@@ -47,8 +47,9 @@ public class SearchAndFilterController {
         staticQueryCriteria.setQueryName("page");
         QueryCriteriaKey queryCriteriaKey = new QueryCriteriaKey();
         if (reqparams !=null){
-            for (String key : reqparams.keySet()){
-                switch (key.trim().toUpperCase()){
+            for (Map.Entry<String, String> entry : reqparams.entrySet()){
+                String key = entry.getKey().trim().toUpperCase();
+                switch (key){
                     case "PAGE":
                         try {
                             page = Integer.valueOf(reqparams.get(key));
@@ -103,7 +104,8 @@ public class SearchAndFilterController {
         staticQueryCriteria.setQueryName("all");
         QueryCriteriaKey queryCriteriaKey = new QueryCriteriaKey();
         if (reqparams !=null){
-            for (String key : reqparams.keySet()){
+            for (Map.Entry<String, String> entry : reqparams.entrySet()){
+                String key = entry.getKey().trim().toUpperCase();
                 queryCriteriaKey.setCriteriaKey(key);
                 queryCriteriaKey.setGenericValue(new GenericValue(reqparams.get(key)));
             }

@@ -19,6 +19,6 @@ public class BankAccount {
     private String accountnumbertype;
     private String reference;
     private String bicfi;//BIC Code - SWIFT
-    private List<ClearingSystemId> clearingsystemidlist;
+    private List<ClearingSystem> clearingsystemidlist;
 
 }

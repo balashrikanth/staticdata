@@ -20,7 +20,7 @@ public class AppError {
     public AppError() {
         this.language = "en";
         this.target="";
-        this.details = new ArrayList<ErrorItem>();
+        this.details = new ArrayList<>();
 
     }
 
@@ -30,7 +30,7 @@ public class AppError {
         this.errorType = errorType;
         this.language = "en";
         this.target="";
-        this.details = new ArrayList<ErrorItem>();
+        this.details = new ArrayList<>();
 
     }
 
@@ -40,7 +40,7 @@ public class AppError {
         this.errorType = errorType;
         this.language = language;
         this.target="";
-        this.details = new ArrayList<ErrorItem>();
+        this.details = new ArrayList<>();
 
     }
 
@@ -50,12 +50,12 @@ public class AppError {
         this.errorType = errorType;
         this.language = language;
         this.target=target;
-        this.details = new ArrayList<ErrorItem>();
+        this.details = new ArrayList<>();
 
     }
 
     public AppError(ErrorItem errorItem){
-        this.details = new ArrayList<ErrorItem>();
+        this.details = new ArrayList<>();
         this.details.add(errorItem);
         this.code = errorItem.getCode();
         this.message = errorItem.getMessage();

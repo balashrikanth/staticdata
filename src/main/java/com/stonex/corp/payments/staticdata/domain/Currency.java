@@ -26,6 +26,12 @@ public class Currency extends StaticData {
     private int spotdays;
     private int secondstoaccept;
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
+    @JsonIgnore
+    static final String isocodetag = "isocode";
+    @JsonIgnore
+    static final String fullnametag = "fullname";
+    @JsonIgnore
+    static final String displaynametag = "displayname";
 
     //Implement this for which collection name is to be used
     @Override
@@ -71,9 +77,9 @@ public class Currency extends StaticData {
         Picklist picklist = new Picklist();
         picklist.setNoOfCols(3);//As set below
         String [] headers = new String[3];
-        headers[0] = "isocode";
-        headers[1] = "displayname";
-        headers[2] = "fullname";
+        headers[0] = isocodetag;
+        headers[1] = displaynametag;
+        headers[2] = fullnametag;
         picklist.setPickListHeaders(headers);
         return picklist;
     }
@@ -81,14 +87,14 @@ public class Currency extends StaticData {
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get("isocode")!=null){
-            picklistcols[0] = document.get("isocode").toString();
+        if (document.get(isocode)!=null){
+            picklistcols[0] = document.get(isocode).toString();
         }
-        if (document.get("displayname")!=null){
-            picklistcols[1] = document.get("displayname").toString();
+        if (document.get(displaynametag)!=null){
+            picklistcols[1] = document.get(displaynametag).toString();
         }
-        if (document.get("fullname")!=null){
-            picklistcols[2] = document.get("fullname").toString();
+        if (document.get(fullnametag)!=null){
+            picklistcols[2] = document.get(fullnametag).toString();
         }
         return picklistcols;
     }
@@ -97,7 +103,7 @@ public class Currency extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"isocode","fullname","displayname","amountprecision","rateprecision","homecountries[]","intermediaries[]","spotdays","secondstoaccept","active"};
+        String [] stringList = new String[]{isocodetag,fullnametag,displaynametag,"amountprecision","rateprecision","homecountries[]","intermediaries[]","spotdays","secondstoaccept","active"};
         return stringList;
     }
 

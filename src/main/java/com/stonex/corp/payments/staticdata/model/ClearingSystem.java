@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendGridTemplate {
-    private String templatetype;
-    private String templateid;
+public class ClearingSystem {
+    private String clearingsystemid;
+    private String clearingsystemmemberid;
 }

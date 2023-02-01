@@ -32,8 +32,7 @@ public class ErrorCodeDB {
     }
 
     public ErrorItem getErrorItem(String target){
-        ErrorItem errorItem = new ErrorItem(this.errorcode,target, this.description);
-        return errorItem;
+        return new ErrorItem(this.errorcode,target, this.description);
     }
 
     public void parseKeywords(){

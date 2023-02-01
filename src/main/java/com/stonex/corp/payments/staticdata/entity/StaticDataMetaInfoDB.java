@@ -33,7 +33,7 @@ public class StaticDataMetaInfoDB {
         this.version=1;
         this.lastAudit = new Audit(userId, action);
         this.lastAudit.setVersion(this.version);
-        this.auditInfoList = new ArrayList<Audit>();
+        this.auditInfoList = new ArrayList<>();
         this.auditInfoList.add(this.lastAudit);
         this.status=SystemFieldConfig.ACTIONNEW;//First Time NEW
     }

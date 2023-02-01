@@ -23,6 +23,12 @@ public class Stonexbankaccount extends StaticData {
     private String defaultdeliveryname;//which of the bank accounts in the list is the default
     private String defaultoperatingaccount;//Which is the operating account
     private boolean active;//keep this attribute naming unchanged as picklist uses this.
+    @JsonIgnore
+    static final String entityidtag = "entityid";
+    @JsonIgnore
+    static final String sellcurrencycodetag = "sellcurrencycode";
+    @JsonIgnore
+    static final String defaultdeliverynametag = "defaultdeliveryname";
 
     //Implement this for which collection name is to be used
     @Override
@@ -49,11 +55,7 @@ public class Stonexbankaccount extends StaticData {
         return this.entityid.toUpperCase().concat(this.sellcurrencycode.toUpperCase());//Key always upper case
     }
 
-    //Implement this if you have to fill up other fields from main fields - denormalize scenario
-    @Override
-    public void enrichFields(){
 
-    }
 
     //Implement this for extracting the object from mongo collection
     @Override
@@ -74,9 +76,9 @@ public class Stonexbankaccount extends StaticData {
         Picklist picklist = new Picklist();
         picklist.setNoOfCols(3);//As set below
         String [] headers = new String[3];
-        headers[0] = "entityid";
-        headers[1] = "sellcurrencycode";
-        headers[2] = "defaultdeliveryname";
+        headers[0] = entityidtag;
+        headers[1] = sellcurrencycodetag;
+        headers[2] = defaultdeliverynametag;
         picklist.setPickListHeaders(headers);
         return picklist;
     }
@@ -84,14 +86,14 @@ public class Stonexbankaccount extends StaticData {
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get("entityid")!=null){
-            picklistcols[0] = document.get("entityid").toString();
+        if (document.get(entityidtag)!=null){
+            picklistcols[0] = document.get(entityidtag).toString();
         }
-        if (document.get("sellcurrencycode")!=null){
-            picklistcols[1] = document.get("sellcurrencycode").toString();
+        if (document.get(sellcurrencycodetag)!=null){
+            picklistcols[1] = document.get(sellcurrencycodetag).toString();
         }
-        if (document.get("defaultdeliveryname")!=null){
-            picklistcols[2] = document.get("defaultdeliveryname").toString();
+        if (document.get(defaultdeliverynametag)!=null){
+            picklistcols[2] = document.get(defaultdeliverynametag).toString();
         }
         return picklistcols;
     }
@@ -100,8 +102,7 @@ public class Stonexbankaccount extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{"entityid","sellcurrencycode","bankaccounts[]","defaultdeliveryname","defaultoperatingaccount","active"};
-        return stringList;
+        return new String[]{entityidtag,sellcurrencycodetag,"bankaccounts[]",defaultdeliverynametag,"defaultoperatingaccount","active"};
     }
 
 

@@ -32,9 +32,8 @@ public class SummaryInfoController {
 
     @GetMapping("/all")
     public String getAllSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId){
-        String jsonContent = "";
         AppReturnObject appReturnObject = new AppReturnObject();
-        List<StaticDataWithAudit> staticDataWithAuditList = new ArrayList<StaticDataWithAudit>();
+        List<StaticDataWithAudit> staticDataWithAuditList = new ArrayList<>();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         List<Document> documentList = staticDataDAL.getAll(approved,staticDataFactory.getCollectionName());
         for (Document d : documentList){
@@ -62,7 +61,7 @@ public class SummaryInfoController {
     @PostMapping("/filtered")
     public String getFilteredSummary(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestBody String jsonContent){
         AppReturnObject appReturnObject = new AppReturnObject();
-        List<StaticDataWithAudit> staticDataWithAuditList = new ArrayList<StaticDataWithAudit>();
+        List<StaticDataWithAudit> staticDataWithAuditList = new ArrayList<>();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         List<Document> documentList = staticDataDAL.getFiltered(approved,staticDataFactory.getCollectionName(),jsonContent);
         for (Document d : documentList){
@@ -88,7 +87,6 @@ public class SummaryInfoController {
 
     @GetMapping("/count/function/{function}/approved/{approved}")
     public long getRecordCount(@PathVariable("function") String functionId,@RequestHeader(value = "userid", defaultValue = "SYSTEM") String userId, @PathVariable("approved") boolean approved){
-        AppReturnObject appReturnObject = new AppReturnObject();
         long counter=0;
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         try {
@@ -105,8 +103,8 @@ public class SummaryInfoController {
         AppReturnObject appReturnObject = new AppReturnObject();
         ReportView reportView = new ReportView();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
-        List<Document> documentList = new ArrayList<Document>();
-        List<String> reportList = new ArrayList<String>();
+        List<Document> documentList = new ArrayList<>();
+        List<String> reportList = new ArrayList<>();
         MongoCollection<Document> documentMongoCollection = staticDataDAL.getAllAsReport(approved,staticDataFactory.getCollectionName());
         reportView.setTitle(staticDataFactory.getStaticData().getReportTitle());
         reportView.setHeader(staticDataFactory.getStaticData().getReportHeader());
@@ -115,12 +113,11 @@ public class SummaryInfoController {
         }
         JsonWriterSettings settings = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
         for (Document d : documentList){
-            String reportline = JsonFlattener.flatten(d.toJson());
+            String reportline = JsonFlattener.flatten(d.toJson(settings));
             JSONObject jsonObject = new JSONObject(reportline);
             reportline = normalize(jsonObject).toString();
             reportList.add(reportline);
         }
-        //appReturnObject.PerformReturnArrayObject(reportList);
         reportView.setBody(reportList.toString());
         reportView.setFooter(staticDataFactory.getStaticData().getReportFooter());
         appReturnObject.PerformReturnArrayObject(reportView);
@@ -129,10 +126,10 @@ public class SummaryInfoController {
 
     static JSONObject normalize(JSONObject object) throws JSONException {
         JSONObject result = new JSONObject();
-        Iterator iterator = object.keys();
+        Iterator<String> iterator = object.keys();
 
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+            String key =  iterator.next();
             String normalizedKey = key.replace(".", "_");
 
             Object inner = object.get(key);

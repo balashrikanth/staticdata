@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FieldValue {
     private String fieldId;
-    private String fieldValue;
+    private String value;
 }

@@ -1,6 +1,8 @@
 package com.stonex.corp.payments.staticdata.config;
 
 public class SystemFieldConfig {
+
+
     //Class Info
     public static final String BASECLASS="com.stonex.corp.payments.staticdata";
 
@@ -19,4 +21,11 @@ public class SystemFieldConfig {
     //Entity Prefix
 
     public static final String ENTITYPREFIX="static-";
+
+    //Default Error
+    public static final String DEFAULTERRORCODE="ENC9999";
+    public static final String UNEXPECTEDERROR="ENC9998";
+    public static final String MESSAGECODEWORD="%%MESSAGE%%";
+
+
 }

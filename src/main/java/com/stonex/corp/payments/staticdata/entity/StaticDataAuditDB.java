@@ -58,7 +58,7 @@ public class StaticDataAuditDB {
     }
 
     public List<ChangeInfo> getChangeInfoOld(String[] labels){
-        List<ChangeInfo> changeInfoList = new ArrayList<ChangeInfo>();
+        List<ChangeInfo> changeInfoList = new ArrayList<>();
 
         for (String s : labels){
             ChangeInfo changeInfo = new ChangeInfo();
@@ -83,19 +83,17 @@ public class StaticDataAuditDB {
     }
 
     public List<ChangeInfo> getChangeInfo(String[] labels){
-        List<ChangeInfo> changeInfoList = new ArrayList<ChangeInfo>();
+        List<ChangeInfo> changeInfoList = new ArrayList<>();
         for (String s : labels){
             ChangeInfo changeInfo = new ChangeInfo();
             changeInfo.setFieldName(s);
             if (this.oldcontent!=null){
                 changeInfo.setOldValue(getRecursiveElement(this.oldcontent,s));
-                //System.out.println("OLD STRING");
-               // iterateJSONString(this.oldcontent,s);
+
             }
             if (this.newcontent!=null){
                 changeInfo.setNewValue(getRecursiveElement(this.newcontent,s));
-               // System.out.println("NEW STRING");
-               // iterateJSONString(this.newcontent,s);
+
             }
             if (changeInfo.getOldValue()!=null && changeInfo.getNewValue()!=null){
                 if (!changeInfo.getOldValue().trim().equalsIgnoreCase(changeInfo.getNewValue().trim())){
@@ -116,7 +114,6 @@ public class StaticDataAuditDB {
             int arrayCount = StringUtils.countMatches(label,"[]");
             JsonObject partialobject = new JsonObject();
             if (elementCount>0 && arrayCount>0 ){
-                    System.out.println("Inner and Array with Array Last");
                     //If both inner element and Array is found and the last one is array
                     String[] labelSets = label.split("\\.");
                     for (int i=0;i<=elementCount;i++){
@@ -142,7 +139,7 @@ public class StaticDataAuditDB {
                 String splitlabel = label.split("\\[")[0];
                 returnValue = "";
                 for (int i=0;i<gsonJsonObject.getAsJsonArray(splitlabel).size();i++){
-                    returnValue = returnValue+gsonJsonObject.getAsJsonArray(splitlabel).get(i).getAsJsonObject().toString();
+                    returnValue = returnValue.concat(gsonJsonObject.getAsJsonArray(splitlabel).get(i).getAsJsonObject().toString());
                 }
             }
             else {
@@ -155,19 +152,6 @@ public class StaticDataAuditDB {
         return  returnValue;
     }
 
-    public void iterateJSONString(String labelContent, String label){
-        try {
-            JSONObject jsonObject = new JSONObject(labelContent.trim());
-            Iterator<?> keys = jsonObject.keys();
-            while (keys.hasNext()){
-                String key = (String) keys.next();
-                if (jsonObject.get(key) instanceof JSONObject){
-                    System.out.println(jsonObject.toString());
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+
 
 }

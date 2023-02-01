@@ -98,7 +98,6 @@ public class StaticDataImpl implements StaticDataDAL {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
             Document filter = new Document();
             filter = Document.parse(filterJSONString);
-            Document document = new Document();
             FindIterable<Document> resultDocument = collection.find(filter);
             for (Document d : resultDocument ){
                 d.remove("staticDataPK");
@@ -125,7 +124,6 @@ public class StaticDataImpl implements StaticDataDAL {
             collectionName = collectionName.concat("_unapproved");
         }
 
-        List<Document> aggregateDocList = new ArrayList<Document>();
         List<Document> resultDocumentList = new ArrayList<Document>();
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
@@ -164,7 +162,6 @@ public class StaticDataImpl implements StaticDataDAL {
             collectionName = collectionName.concat("_unapproved");
         }
 
-        List<Document> aggregateDocList = new ArrayList<Document>();
         Document document = new Document();
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
@@ -187,8 +184,7 @@ public class StaticDataImpl implements StaticDataDAL {
             collectionName = collectionName.concat("_unapproved");
         }
 
-        List<Document> aggregateDocList = new ArrayList<Document>();
-        List<Document> resultDocumentList = new ArrayList<Document>();
+        List<Document> resultDocumentList = new ArrayList<>();
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
             FindIterable<Document> resultDocument = collection.find(new Document("$match",
@@ -213,8 +209,7 @@ public class StaticDataImpl implements StaticDataDAL {
             collectionName = collectionName.concat("_unapproved");
         }
 
-        List<Document> aggregateDocList = new ArrayList<Document>();
-        List<Document> resultDocumentList = new ArrayList<Document>();
+
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
             counter = collection.countDocuments();
@@ -374,7 +369,7 @@ public class StaticDataImpl implements StaticDataDAL {
 
     @Override
     public List<Object> getPage(boolean approved, String functionId,Query query, PageInfo pageInfo) {
-        List<Object> objectList = new ArrayList<Object>();
+        List<Object> objectList = new ArrayList<>();
         try {
             StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
             String collectionName = staticDataFactory.getCollectionName();

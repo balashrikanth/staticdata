@@ -18,7 +18,7 @@ public class StaticData {
         return "";
     }
     public String createPK(String content) {
-        return "";
+        return content;
     }
     @JsonIgnore
     public String getPK(){
@@ -31,10 +31,12 @@ public class StaticData {
 
 
     public void enrichFields(){
+        //Dummy For enrichment if required
 
     }
 
     public StaticData getObjectFromDocument(Document document){
+        // Skeleton class for signature to override in individual domain classes
         StaticData staticData = new StaticData();
 
         return staticData;
@@ -57,7 +59,7 @@ public class StaticData {
 
     @JsonIgnore
     public List<Document> getReportData(MongoCollection<Document> collection){
-        return new ArrayList<Document>();
+        return new ArrayList<>();
     }
 
 
@@ -71,8 +73,7 @@ public class StaticData {
     }
 
     public String[] getLabels(){
-        String [] stringList = new String[10];
-        return stringList;
+        return new String[10];
     }
     public AppError fieldValidate(String content){
         return new AppError();

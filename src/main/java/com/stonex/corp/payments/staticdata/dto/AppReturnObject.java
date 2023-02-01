@@ -3,6 +3,7 @@ package com.stonex.corp.payments.staticdata.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.utils.CustomCharacterEscapes;
 import lombok.Data;
@@ -15,20 +16,17 @@ public class AppReturnObject {
     private boolean returncode;
     private String data;
     private AppError appError;
-    //private List<AppError> appErrors = null;
 
     public AppReturnObject(){
         this.returncode = false;
         this.data = "\"No Data\"";
         this.appError = new AppError();
-        //this.appErrors = new ArrayList<AppError>();
     }
 
     public AppReturnObject(boolean returncode, String data) {
         this.returncode = returncode;
         this.data = data;
         this.appError = new AppError();
-        //this.appErrors = new ArrayList<AppError>();
     }
 
     public AppReturnObject(boolean returncode, String data, AppError appError) {
@@ -36,7 +34,6 @@ public class AppReturnObject {
         this.data = data;
         if (appError != null)
             this.appError = appError;
-            //this.appErrors.add(appError);
     }
 
 
@@ -57,9 +54,8 @@ public class AppReturnObject {
             e.printStackTrace();
             setReturncode(false);
             setData("\"\"");
-            this.appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
+            this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing response","S","en") ;
 
-            //this.appErrors.add(appError);
         }
     }
 
@@ -81,27 +77,17 @@ public class AppReturnObject {
             e.printStackTrace();
             setReturncode(false);
             setData("\"\"");
-            this.appError = new AppError("EE9998","Unexpected Error Preparing response","S","en") ;
-            //this.appErrors.add(appError);
+            this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing response","S","en") ;
         }
     }
 
     public void addError(AppError appError){
         setReturncode(false);
         this.appError = appError;
-        //this.appErrors.add(appError);
 
     }
 
-    /*public void addAllError(List<AppError> appError){
-        setReturncode(false);
-        setData("\"\"");
-        this.appError = appError.get(0);
-        //this.appErrors.addAll(appError);
 
-    }*
-
-     */
 
     public String setReturnJSON(){
         String jsonString="";
@@ -113,33 +99,13 @@ public class AppReturnObject {
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            this.appError = new AppError("EE9998","Unexpected Error Preparing error response","S","en") ;
-            //this.appErrors.add(appError);
+            this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing error response","S","en") ;
         }
         errorjson=errorjson+jsonString+"]";
         String s = "{\"returncode\":" + returncode + "," + "\"data\":" + data + "," + errorjson + "}";
         return s;
     }
 
-    /*
-    public String setReturnJSON(){
 
-        // error is an array list now
-        String errorjson = "\"errors\":[";
-        int nooferrors = this.appErrors.size();
-        for (int i=0; i<nooferrors; i++){
-            errorjson = errorjson+"{\"errorcode\":\""+appErrors.get(i).getCode()+"\","+"\"errormsg\":\""+appErrors.get(i).getMessage()+"\"}";
-            if (nooferrors>1 && i <(nooferrors-1)) {
-                errorjson = errorjson +",";
-            }
-        }
-        //put closing for array
-        errorjson = errorjson +"]";
-        String s = "{\"returncode\":" + returncode + "," + "\"data\":" + data + "," + errorjson + "}";
-        return s;
-
-    }
-
-     */
 
 }

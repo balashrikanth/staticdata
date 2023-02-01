@@ -16,7 +16,7 @@ public class StaticQueryCriteria {
     private boolean fetchAll;//True get all - False get One
 
     public StaticQueryCriteria() {
-        this.queryCriteriaKeyList = new ArrayList<QueryCriteriaKey>();
+        this.queryCriteriaKeyList = new ArrayList<>();
         this.logicalOperator = "AND";
         this.fetchAll = true;
     }
@@ -72,7 +72,7 @@ public class StaticQueryCriteria {
     }
 
     public List<Criteria> buildCriteria(){
-        List<Criteria> criteriaList = new ArrayList<Criteria>();
+        List<Criteria> criteriaList = new ArrayList<>();
         if (queryCriteriaKeyList !=null){
             for (int i = 0; i< queryCriteriaKeyList.size(); i++){
                 QueryCriteriaKey csiQueryCriteriaKey = queryCriteriaKeyList.get(i);
@@ -286,6 +286,7 @@ public class StaticQueryCriteria {
                             } catch (Exception e){
                                 break;
                             }
+                            break;
                         default:
                             //Default String
                             criteriaList.add(Criteria.where(csiQueryCriteriaKey.getCriteriaKey()).is(genericValue.getValue()));
@@ -300,15 +301,14 @@ public class StaticQueryCriteria {
     public  Query getQuery() {
         Query query = new Query();
         query.collation(Collation.of("en").strength(Collation.ComparisonLevel.secondary()));//case insensitive search.
-        System.out.println("EXECUTING QUERY " + this.getQueryName());
-        List<QueryCriteriaKey> queryCriteriaKeyList = this.getQueryCriteriaKeyList();
-        String logicalOperator = "AND";
+        List<QueryCriteriaKey> queryCriteriaKeyList1 = this.getQueryCriteriaKeyList();
+        String logicalOperator1 = "AND";
         if (this.getLogicalOperator() != null) {
-            logicalOperator = this.getLogicalOperator();
+            logicalOperator1 = this.getLogicalOperator();
         }
         Criteria criteria = new Criteria();
-        List<Criteria> criteriaList = buildCriteria(queryCriteriaKeyList);
-        switch (logicalOperator.trim().toUpperCase()) {
+        List<Criteria> criteriaList = buildCriteria(queryCriteriaKeyList1);
+        switch (logicalOperator1.trim().toUpperCase()) {
             case "AND":
                 criteria.andOperator(criteriaList.toArray(new Criteria[criteriaList.size()]));
                 break;
@@ -320,15 +320,11 @@ public class StaticQueryCriteria {
                 break;
         }
         query.addCriteria(criteria);
-        try {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return query;
     }
 
     private List<Criteria> buildCriteria( List<QueryCriteriaKey> queryCriteriaKeyList){
-        List<Criteria> criteriaList = new ArrayList<Criteria>();
+        List<Criteria> criteriaList = new ArrayList<>();
 
         if (queryCriteriaKeyList!=null){
             for (int i=0;i<queryCriteriaKeyList.size();i++){
@@ -543,6 +539,7 @@ public class StaticQueryCriteria {
                             } catch (Exception e){
                                 break;
                             }
+                            break;
                         default:
                             //Default String
                             criteriaList.add(Criteria.where(queryCriteriaKey.getCriteriaKey()).is(genericValue.getValue()));
