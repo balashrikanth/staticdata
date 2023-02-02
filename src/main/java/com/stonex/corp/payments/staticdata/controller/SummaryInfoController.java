@@ -10,6 +10,8 @@ import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.model.Audit;
 import com.stonex.corp.payments.staticdata.model.StaticDataWithAudit;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
@@ -26,6 +28,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/summary")
 public class SummaryInfoController {
+
+    private static final Logger logger = LogManager.getLogger(SummaryInfoController.class);
+
+
     @Autowired
     StaticDataDAL staticDataDAL;
 
@@ -46,7 +52,7 @@ public class SummaryInfoController {
                     audit = staticDataMetaInfoDB.getLastAudit();
                     staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
                 } catch (Exception e){
-                    e.printStackTrace();
+                    logger.error("Unable to Get audit but system procceeds".concat(e.getMessage()));
                     staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
 
                 }
@@ -74,7 +80,7 @@ public class SummaryInfoController {
                     audit = staticDataMetaInfoDB.getLastAudit();
                     staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData(),audit);
                 } catch (Exception e){
-                    e.printStackTrace();
+                    logger.error("Unable to Get audit but system procceeds".concat(e.getMessage()));
                     staticDataWithAudit = new StaticDataWithAudit(staticDataFactory1.getStaticData());
                 }
                 staticDataWithAuditList.add(staticDataWithAudit);
@@ -92,7 +98,7 @@ public class SummaryInfoController {
         try {
             counter = staticDataDAL.getCount(approved,staticDataFactory.getCollectionName());
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return counter;
 

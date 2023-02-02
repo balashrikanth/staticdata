@@ -11,6 +11,8 @@ import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.Decimal128;
 
@@ -24,6 +26,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Currencyfee extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Currencyfee.class);
     //KEEP ALL attributes in small case as reflection is used
     private String clientsellcurrencycode;
     private double samecurrencyfee;
@@ -46,7 +50,7 @@ public class Currencyfee extends StaticData {
             Currencyfee currencyfee = objectMapper.readValue(content, Currencyfee.class);
             returnValue = currencyfee.getClientsellcurrencycode();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -65,7 +69,7 @@ public class Currencyfee extends StaticData {
         try {
             currencyfee = objectMapper.readValue(document.toJson(), Currencyfee.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return currencyfee;
     }

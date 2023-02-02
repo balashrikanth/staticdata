@@ -8,6 +8,8 @@ import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Country extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Country.class);
     //KEEP ALL attributes in small case as reflection is used
     private String isocode;
     private String fullname;
@@ -51,7 +55,7 @@ public class Country extends StaticData {
             Country country = objectMapper.readValue(content,Country.class);
             returnValue = country.getIsocode();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -70,7 +74,7 @@ public class Country extends StaticData {
         try {
             country = objectMapper.readValue(document.toJson(),Country.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return country;
     }

@@ -7,11 +7,12 @@ import com.stonex.corp.payments.staticdata.dal.StaticDataDAL;
 import com.stonex.corp.payments.staticdata.dal.ValidateDataDAL;
 import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 
-import com.stonex.corp.payments.staticdata.entity.StaticDataAuditDB;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
 
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +30,9 @@ import java.util.Locale;
 
 @RequestMapping("/detail")
 public class DetailInfoController {
+
+    private static final Logger logger = LogManager.getLogger(DetailInfoController.class);
+
 
     @Autowired
     StaticDataDAL staticDataDAL;

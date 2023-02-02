@@ -12,6 +12,8 @@ import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepositor
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/audit")
 public class AuditController {
+    private static final Logger logger = LogManager.getLogger(AuditController.class);
     @Autowired
     StaticDataDAL staticDataDAL;
     @Autowired
@@ -31,6 +34,7 @@ public class AuditController {
 
     @PostMapping("/record")
     public String getAuditforRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestBody String jsonContent){
+        logger.debug("POST API Audit Record");
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         StaticDataMetaInfoDB staticDataMetaInfoDB = this.staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName());
@@ -45,6 +49,7 @@ public class AuditController {
 
     @PostMapping("/change/version/{version}")
     public String getChangeForAuditRecord(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId,@RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId,@PathVariable("version") int version, @RequestBody String jsonContent){
+        logger.debug("POST API Change version");
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
         StaticDataAuditDB staticDataAuditDB = this.staticDataAuditDBRepository.findFirstByStaticDataPKAndCollectionNameAndVersion(staticDataFactory.getPKValue(),staticDataFactory.getCollectionName(),version);

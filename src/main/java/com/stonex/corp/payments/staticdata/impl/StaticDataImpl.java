@@ -14,6 +14,8 @@ import com.stonex.corp.payments.staticdata.repository.StaticDataAuditDBRepositor
 import com.stonex.corp.payments.staticdata.repository.StaticDataMetaInfoDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +32,9 @@ import java.util.stream.Stream;
 
 @Repository
 public class StaticDataImpl implements StaticDataDAL {
+    private static final Logger logger = LogManager.getLogger(StaticDataImpl.class);
+
+
     @Autowired
     StaticDataMetaInfoDBRepository staticDataMetaInfoDBRepository;
     @Autowired
@@ -54,7 +59,7 @@ public class StaticDataImpl implements StaticDataDAL {
             AggregateIterable<Document> resultDocument = collection.aggregate(aggregateDocList);
             document = resultDocument.first();
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -79,7 +84,7 @@ public class StaticDataImpl implements StaticDataDAL {
                 document.remove("_id");
             }
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -105,7 +110,7 @@ public class StaticDataImpl implements StaticDataDAL {
                 resultDocumentList.add(d);
             }
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return resultDocumentList;
     }
@@ -136,7 +141,7 @@ public class StaticDataImpl implements StaticDataDAL {
                 resultDocumentList.add(d);
             }
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return resultDocumentList;
     }
@@ -151,7 +156,7 @@ public class StaticDataImpl implements StaticDataDAL {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
             return  collection;
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return  null;
         }
     }
@@ -173,7 +178,7 @@ public class StaticDataImpl implements StaticDataDAL {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -197,7 +202,7 @@ public class StaticDataImpl implements StaticDataDAL {
                 resultDocumentList.add(d);
             }
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return resultDocumentList;
     }
@@ -215,7 +220,7 @@ public class StaticDataImpl implements StaticDataDAL {
             counter = collection.countDocuments();
 
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return counter;
     }
@@ -231,7 +236,7 @@ public class StaticDataImpl implements StaticDataDAL {
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -250,7 +255,7 @@ public class StaticDataImpl implements StaticDataDAL {
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -270,7 +275,7 @@ public class StaticDataImpl implements StaticDataDAL {
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -296,7 +301,7 @@ public class StaticDataImpl implements StaticDataDAL {
             document.remove("_id");
 
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -311,7 +316,7 @@ public class StaticDataImpl implements StaticDataDAL {
             DeleteResult result = mongoTemplate.remove(query,collectionName.concat("_unapproved"));
             returnValue = result.wasAcknowledged();
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return  returnValue;
     }
@@ -330,7 +335,7 @@ public class StaticDataImpl implements StaticDataDAL {
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return document;
     }
@@ -345,7 +350,7 @@ public class StaticDataImpl implements StaticDataDAL {
            DeleteResult result = mongoTemplate.remove(query, collectionName);
            returnValue = result.wasAcknowledged();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -361,7 +366,7 @@ public class StaticDataImpl implements StaticDataDAL {
             }
             objectList = mongoTemplate.find(query,Object.class,collectionName);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return objectList;
     }
@@ -382,7 +387,7 @@ public class StaticDataImpl implements StaticDataDAL {
                 objectList.add(o);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return objectList;
     }

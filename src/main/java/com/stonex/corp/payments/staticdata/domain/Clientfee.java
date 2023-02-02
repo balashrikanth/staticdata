@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.controller.AuditController;
 import com.stonex.corp.payments.staticdata.model.XCurrencyFee;
 import com.stonex.corp.payments.staticdata.model.Picklist;
 import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.Decimal128;
 import org.json.JSONObject;
@@ -26,6 +29,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Clientfee extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Clientfee.class);
+
     //KEEP ALL attributes in small case as reflection is used
     private String clientid;
     private String clientsellcurrencycode;
@@ -50,7 +56,7 @@ public class Clientfee extends StaticData {
             Clientfee clientfee = objectMapper.readValue(content, Clientfee.class);
             returnValue = clientfee.getClientid().concat(getClientsellcurrencycode());
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -69,7 +75,7 @@ public class Clientfee extends StaticData {
         try {
             clientfee = objectMapper.readValue(document.toJson(), Clientfee.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return clientfee;
     }

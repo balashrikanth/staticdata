@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
 import com.stonex.corp.payments.staticdata.entity.StaticDataMetaInfoDB;
 import com.stonex.corp.payments.staticdata.error.AppError;
+import com.stonex.corp.payments.staticdata.impl.ValidateDataImpl;
 import com.stonex.corp.payments.staticdata.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +27,9 @@ import java.util.List;
 @AllArgsConstructor
 @Component
 public class StaticDataFactory {
+
+    private static final Logger logger = LogManager.getLogger(StaticDataFactory.class);
+
 
     private String functionId;
     private String content;//Json String from URL;
@@ -41,7 +47,7 @@ public class StaticDataFactory {
             this.staticData = (StaticData) constructor.newInstance();
         } catch (Exception e){
             this.staticData=null;//This indicates that the Static Data was not instantiated to correct object
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -61,7 +67,7 @@ public class StaticDataFactory {
             this.content = getJSONString(this.staticData);
         } catch (Exception e){
             this.staticData=null;//This indicates that the Static Data was not instantiated to correct object
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
     //Used for automatically applying validation to fields based on staticdata validation
@@ -84,7 +90,7 @@ public class StaticDataFactory {
             } catch (NoSuchMethodException e){
                 //We skip those objects that are of JsonIgnore type as there is no need to validate
             } catch (Exception e){
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
         return fieldValueMap;
@@ -116,7 +122,7 @@ public class StaticDataFactory {
              audit = staticDataMetaInfoDB.getLastAudit();
             return new StaticDataWithAudit(staticData1,audit);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return staticData1;
         }
     }
@@ -157,7 +163,7 @@ public class StaticDataFactory {
         }
         catch (Exception  e) {
             // catch various errors
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }

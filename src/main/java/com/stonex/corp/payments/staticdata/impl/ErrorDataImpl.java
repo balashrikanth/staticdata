@@ -1,9 +1,12 @@
 package com.stonex.corp.payments.staticdata.impl;
 
 import com.stonex.corp.payments.staticdata.dal.ErrorDataDAL;
+import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 import com.stonex.corp.payments.staticdata.entity.ErrorCodeDB;
 import com.stonex.corp.payments.staticdata.error.ErrorItem;
 import com.stonex.corp.payments.staticdata.repository.ErrorCodeDBRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +15,8 @@ import java.util.Map;
 
 @Repository
 public class ErrorDataImpl implements ErrorDataDAL {
+
+    private static final Logger logger = LogManager.getLogger(ErrorDataImpl.class);
 
     @Autowired
     ErrorCodeDBRepository errorCodeDBRepository;

@@ -10,6 +10,8 @@ import com.stonex.corp.payments.staticdata.model.QueryCriteriaKey;
 import com.stonex.corp.payments.staticdata.model.StaticQueryCriteria;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -23,6 +25,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/searchandfilter")
 public class SearchAndFilterController {
+
+    private static final Logger logger = LogManager.getLogger(SearchAndFilterController.class);
+
 
     @Autowired
     private final StaticDataDAL staticDataDAL;

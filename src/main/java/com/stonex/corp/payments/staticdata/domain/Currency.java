@@ -8,6 +8,8 @@ import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 
@@ -15,6 +17,8 @@ import org.bson.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Currency extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Currency.class);
     //KEEP ALL attributes in small case as reflection is used
     private String isocode;
     private String fullname;
@@ -47,7 +51,7 @@ public class Currency extends StaticData {
             Currency currency = objectMapper.readValue(content, Currency.class);
             returnValue = currency.getIsocode();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -66,7 +70,7 @@ public class Currency extends StaticData {
         try {
             country = objectMapper.readValue(document.toJson(), Currency.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return country;
     }

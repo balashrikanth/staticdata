@@ -147,7 +147,6 @@ public class StaticDataAuditDB {
                 returnValue = gsonJsonObject.get(label).getAsString();
             }
         }catch (Exception e){
-            e.printStackTrace();
         }
         return  returnValue;
     }

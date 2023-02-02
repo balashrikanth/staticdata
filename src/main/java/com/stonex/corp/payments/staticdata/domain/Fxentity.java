@@ -7,6 +7,8 @@ import com.stonex.corp.payments.staticdata.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Fxentity extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Fxentity.class);
     //KEEP ALL attributes in small case as reflection is used
     private String entityid;
     private String fullname;
@@ -54,7 +58,7 @@ public class Fxentity extends StaticData {
             Fxentity fxentity = objectMapper.readValue(content, Fxentity.class);
             returnValue = fxentity.getEntityid();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -148,7 +152,7 @@ public class Fxentity extends StaticData {
         try {
             fxentity = objectMapper.readValue(document.toJson(), Fxentity.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return fxentity;
     }

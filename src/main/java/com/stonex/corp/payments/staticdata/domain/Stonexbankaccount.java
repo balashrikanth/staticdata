@@ -7,6 +7,8 @@ import com.stonex.corp.payments.staticdata.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Stonexbankaccount extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Stonexbankaccount.class);
     //KEEP ALL attributes in small case as reflection is used
     private String entityid;
     private String sellcurrencycode;
@@ -44,7 +48,7 @@ public class Stonexbankaccount extends StaticData {
             Stonexbankaccount stonexbankaccount = objectMapper.readValue(content, Stonexbankaccount.class);
             returnValue = stonexbankaccount.getEntityid().concat(stonexbankaccount.getSellcurrencycode());
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -65,7 +69,7 @@ public class Stonexbankaccount extends StaticData {
         try {
             stonexbankaccount = objectMapper.readValue(document.toJson(), Stonexbankaccount.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return stonexbankaccount;
     }

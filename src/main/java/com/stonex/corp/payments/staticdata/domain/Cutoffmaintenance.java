@@ -8,6 +8,8 @@ import com.stonex.corp.payments.staticdata.model.StaticData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 
 
@@ -15,6 +17,8 @@ import org.bson.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cutoffmaintenance extends StaticData {
+    @JsonIgnore
+    private static final Logger logger = LogManager.getLogger(Cutoffmaintenance.class);
     //KEEP ALL attributes in small case as reflection is used
     private String currencycode;
     private String entityid;
@@ -48,7 +52,7 @@ public class Cutoffmaintenance extends StaticData {
             Cutoffmaintenance cutoffmaintenance = objectMapper.readValue(content, Cutoffmaintenance.class);
             returnValue = cutoffmaintenance.getCurrencycode().concat(cutoffmaintenance.getEntityid());
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return returnValue;
     }
@@ -67,7 +71,7 @@ public class Cutoffmaintenance extends StaticData {
         try {
             cutoffmaintenance = objectMapper.readValue(document.toJson(), Cutoffmaintenance.class);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return cutoffmaintenance;
     }

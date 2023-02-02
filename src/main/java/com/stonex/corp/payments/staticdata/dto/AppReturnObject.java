@@ -4,15 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.stonex.corp.payments.staticdata.config.SystemFieldConfig;
+import com.stonex.corp.payments.staticdata.controller.SummaryInfoController;
 import com.stonex.corp.payments.staticdata.error.AppError;
 import com.stonex.corp.payments.staticdata.utils.CustomCharacterEscapes;
 import lombok.Data;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class AppReturnObject {
+
+    private static final Logger logger = LogManager.getLogger(AppReturnObject.class);
+
     private boolean returncode;
     private String data;
     private AppError appError;
@@ -42,7 +48,6 @@ public class AppReturnObject {
         ObjectMapper mapper = new ObjectMapper();
        this.setReturncode(true);
        this.appError = new AppError();
-        //this.appErrors = new ArrayList<>();
         String jsonString;
 
         try {
@@ -51,7 +56,7 @@ public class AppReturnObject {
             setData(jsonString);
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             setReturncode(false);
             setData("\"\"");
             this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing response","S","en") ;
@@ -65,7 +70,6 @@ public class AppReturnObject {
         mapper.getFactory().setCharacterEscapes(new CustomCharacterEscapes());
         this.setReturncode(true);
         this.appError = new AppError();
-        //this.appErrors = new ArrayList<>();
         String jsonString;
         try {
 
@@ -74,7 +78,7 @@ public class AppReturnObject {
             setData(jsonString);
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             setReturncode(false);
             setData("\"\"");
             this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing response","S","en") ;
@@ -98,7 +102,7 @@ public class AppReturnObject {
             jsonString = mapper.writeValueAsString(this.appError);
 
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing error response","S","en") ;
         }
         errorjson=errorjson+jsonString+"]";

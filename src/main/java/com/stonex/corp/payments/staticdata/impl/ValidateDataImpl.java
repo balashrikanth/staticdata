@@ -11,6 +11,8 @@ import com.stonex.corp.payments.staticdata.model.FieldValidationRules;
 import com.stonex.corp.payments.staticdata.repository.EntityValidationRulesDBRepository;
 import com.stonex.corp.payments.staticdata.utils.StaticDataFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,8 @@ import java.util.List;
 
 @Repository
 public class ValidateDataImpl implements ValidateDataDAL {
+    private static final Logger logger = LogManager.getLogger(ValidateDataImpl.class);
+
     @Autowired
     EntityValidationRulesDBRepository entityValidationRulesDBRepository;
     @Autowired
@@ -213,10 +217,11 @@ public class ValidateDataImpl implements ValidateDataDAL {
 
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
             hashMap = new HashMap<String,String>();
             hashMap.put("%%MESSAGE%%", e.getMessage());
             appError.addErrorItem(errorDataDAL.getErrorItem(language,"ENC9999",staticDataFactory.getFunctionId()));
         }
-        return appError;    }
+        return appError;
+    }
 }
