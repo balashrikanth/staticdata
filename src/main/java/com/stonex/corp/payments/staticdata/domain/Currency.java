@@ -91,8 +91,8 @@ public class Currency extends StaticData {
     @Override
     public String[] getPickListRow(Document document){
         String [] picklistcols = new String[]{"NA","NA","NA"};
-        if (document.get(isocode)!=null){
-            picklistcols[0] = document.get(isocode).toString();
+        if (document.get(isocodetag)!=null){
+            picklistcols[0] = document.get(isocodetag).toString();
         }
         if (document.get(displaynametag)!=null){
             picklistcols[1] = document.get(displaynametag).toString();

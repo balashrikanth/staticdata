@@ -23,6 +23,7 @@ public class Cutoffmaintenance extends StaticData {
     private String currencycode;
     private String entityid;
     private String localtimezone;
+    private int spotdays;
     private int externalpaylegsettlementday;
     private String externalpaylegcutofftime;
     private int stonexpaylegsettlementday;
@@ -108,7 +109,7 @@ public class Cutoffmaintenance extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        return new String[]{currencycodetag,entityidtag,localtimezonetag,"externalpaylegsettlementday","externalpaylegcutofftime","stonexpaylegsettlementday","stonexpaylegcutofftime","externalreceivelegsettlementday","externalreceivelegcutofftime","stonexreceivelegsettlementday","stonexreceivelegcutofftime","active"};
+        return new String[]{currencycodetag,entityidtag,localtimezonetag,"spotdays","externalpaylegsettlementday","externalpaylegcutofftime","stonexpaylegsettlementday","stonexpaylegcutofftime","externalreceivelegsettlementday","externalreceivelegcutofftime","stonexreceivelegsettlementday","stonexreceivelegcutofftime","active"};
     }
 
 
