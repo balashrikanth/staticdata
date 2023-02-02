@@ -106,8 +106,7 @@ public class AppReturnObject {
             this.appError = new AppError(SystemFieldConfig.UNEXPECTEDERROR,"Unexpected Error Preparing error response","S","en") ;
         }
         errorjson=errorjson+jsonString+"]";
-        String s = "{\"returncode\":" + returncode + "," + "\"data\":" + data + "," + errorjson + "}";
-        return s;
+        return  "{\"returncode\":" + returncode + "," + "\"data\":" + data + "," + errorjson + "}";
     }
 
 

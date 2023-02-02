@@ -103,6 +103,7 @@ public class SearchAndFilterController {
     @GetMapping("/all")
     public String getAllSearchCriteria(@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader("userid") String userId,
             @RequestParam (required=false) Map<String,String> reqparams) {
+        logger.debug("GET API All");
         AppReturnObject appReturnObject = new AppReturnObject();
 
         StaticQueryCriteria staticQueryCriteria = new StaticQueryCriteria();

@@ -32,7 +32,6 @@ public class ValidateDataImpl implements ValidateDataDAL {
     public AppError validate(StaticDataFactory staticDataFactory, String language) {
         String errorCode="";
         AppError appError = new AppError();
-        ErrorItem errorItem = new ErrorItem();
         ErrorCodeDB errorCodeDB = new ErrorCodeDB();
         HashMap<String,String> hashMap;
         HashMap<String,Object> fieldValueMap = staticDataFactory.getFields();
@@ -52,7 +51,7 @@ public class ValidateDataImpl implements ValidateDataDAL {
                                 case "INTEGER":
                                 case "FLOAT":
                                 case "DOUBLE":
-                                    if (o!=null && o instanceof Number){
+                                    if ( o instanceof Number){
                                         dataTypeError = false;
                                     } else{
                                         dataTypeError = true;
@@ -72,7 +71,7 @@ public class ValidateDataImpl implements ValidateDataDAL {
                                 if (fieldAttributes.getDatatypeerrorcode()!=null){
                                     errorCode = fieldAttributes.getDatatypeerrorcode();
                                 }
-                                hashMap = new HashMap<String,String>();
+                                hashMap = new HashMap<>();
                                 hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
                                 hashMap.put("%%DATATYPE%%", fieldAttributes.getDatatype());
                                 appError.addErrorItem(errorDataDAL.getErrorItem(language,errorCode,fieldValidationRules.getFieldid(),hashMap));
@@ -86,7 +85,7 @@ public class ValidateDataImpl implements ValidateDataDAL {
                                     if (fieldAttributes.getMandatoryerrorcode()!=null){
                                         errorCode = fieldAttributes.getMandatoryerrorcode();
                                     }
-                                    hashMap = new HashMap<String,String>();
+                                    hashMap = new HashMap<>();
                                     hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
                                     appError.addErrorItem(errorDataDAL.getErrorItem(language,errorCode,fieldValidationRules.getFieldid(),hashMap));
                                 }
@@ -142,7 +141,7 @@ public class ValidateDataImpl implements ValidateDataDAL {
                                 if (fieldAttributes.getDataconstrainterrorcode()!=null){
                                     errorCode = fieldAttributes.getDataconstrainterrorcode();
                                 }
-                                hashMap = new HashMap<String,String>();
+                                hashMap = new HashMap<>();
                                 hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
                                 hashMap.put("%%CONSTRAINT%%", fieldAttributes.getDataconstraint());
                                 appError.addErrorItem(errorDataDAL.getErrorItem(language,errorCode,fieldValidationRules.getFieldid(),hashMap));
@@ -157,41 +156,42 @@ public class ValidateDataImpl implements ValidateDataDAL {
                             switch(fieldAttributes.getDatatype().trim().toUpperCase()){
                                 case "STRING":
                                     try {
-                                        fieldValue = o.toString().length();
-                                    } catch (NullPointerException exception){
-
+                                        if (o!=null){
+                                            fieldValue = o.toString().length();
+                                        }
                                     }
                                     catch (Exception e){
-                                        //e.printStackTrace();
+                                        logger.error(e.getMessage());
                                     }
                                     break;
                                 case "INTEGER":
                                     try {
-                                        fieldValue = (int) o;
-                                    } catch (NullPointerException exception){
-
-                                    }catch (Exception e){
-                                        //e.printStackTrace();
+                                        if (o != null) {
+                                            fieldValue = (int) o;
+                                        }
+                                    }
+                                    catch (Exception e){
+                                        logger.error(e.getMessage());
                                     }
                                     break;
                                 case "FLOAT":
                                     try {
-                                        Float floatValue = (Float) o;
-                                        fieldValue = Math.round(floatValue);
-                                    } catch (NullPointerException exception){
-
-                                    }catch (Exception e){
-                                        //e.printStackTrace();
+                                        if (o!=null){
+                                            Float floatValue = (Float) o;
+                                            fieldValue = Math.round(floatValue);
+                                        }
+                                    } catch (Exception e){
+                                        logger.error(e.getMessage());
                                     }
                                     break;
                                 case "DOUBLE":
                                     try {
-                                        Double doubleValue = (Double) o;
-                                        fieldValue = doubleValue.intValue();
-                                    }catch (NullPointerException exception){
-
-                                    } catch (Exception e){
-                                       // e.printStackTrace();
+                                        if (o!=null){
+                                            Double doubleValue = (Double) o;
+                                            fieldValue = doubleValue.intValue();
+                                        }
+                                    }catch (Exception e){
+                                        logger.error(e.getMessage());
                                     }
                                     break;
                                 default:
@@ -201,12 +201,11 @@ public class ValidateDataImpl implements ValidateDataDAL {
                                 if (fieldAttributes.getLengtherrorcode()!=null){
                                     errorCode = fieldAttributes.getLengtherrorcode();
                                 }
-                                hashMap = new HashMap<String,String>();
+                                hashMap = new HashMap<>();
                                 hashMap.put("%%FIELDID%%", fieldValidationRules.getFieldid());
                                 hashMap.put("%%MINLENGTH%%",String.valueOf(fieldAttributes.getMinlength()));
                                 hashMap.put("%%MAXLENGTH%%",String.valueOf(fieldAttributes.getMaxlength()));
                                 errorCodeDB.parseKeywords(hashMap);
-                                errorItem = errorCodeDB.getErrorItem(fieldValidationRules.getFieldid());
                                 appError.addErrorItem(errorDataDAL.getErrorItem(language,errorCode,fieldValidationRules.getFieldid(),hashMap));
                             }
                         }
@@ -218,7 +217,7 @@ public class ValidateDataImpl implements ValidateDataDAL {
             }
         }catch (Exception e){
             logger.error(e.getMessage());
-            hashMap = new HashMap<String,String>();
+            hashMap = new HashMap<>();
             hashMap.put("%%MESSAGE%%", e.getMessage());
             appError.addErrorItem(errorDataDAL.getErrorItem(language,"ENC9999",staticDataFactory.getFunctionId()));
         }

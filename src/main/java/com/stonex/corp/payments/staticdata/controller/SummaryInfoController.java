@@ -106,6 +106,7 @@ public class SummaryInfoController {
 
     @GetMapping("/report")
     public String getSummaryReport(@RequestHeader("approved") boolean approved,@RequestHeader("functionId") String functionId, @RequestHeader("applicationId") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId) {
+        logger.debug("GET API Summary Report");
         AppReturnObject appReturnObject = new AppReturnObject();
         ReportView reportView = new ReportView();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);

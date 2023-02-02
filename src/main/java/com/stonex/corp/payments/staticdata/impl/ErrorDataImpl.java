@@ -1,7 +1,6 @@
 package com.stonex.corp.payments.staticdata.impl;
 
 import com.stonex.corp.payments.staticdata.dal.ErrorDataDAL;
-import com.stonex.corp.payments.staticdata.dto.AppReturnObject;
 import com.stonex.corp.payments.staticdata.entity.ErrorCodeDB;
 import com.stonex.corp.payments.staticdata.error.ErrorItem;
 import com.stonex.corp.payments.staticdata.repository.ErrorCodeDBRepository;
@@ -23,6 +22,7 @@ public class ErrorDataImpl implements ErrorDataDAL {
 
     @Override
     public ErrorItem getErrorItem(String language, String errorCode, String fieldId) {
+        logger.debug("Get Error Item");
         ErrorCodeDB errorCodeDB = null;
         ErrorItem errorItem = new ErrorItem();
         if (!language.equalsIgnoreCase("en")){

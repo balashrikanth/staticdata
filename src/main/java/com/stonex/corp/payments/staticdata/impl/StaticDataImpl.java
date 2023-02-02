@@ -47,9 +47,9 @@ public class StaticDataImpl implements StaticDataDAL {
     }
     @Override
     public Document findRecord(boolean approved, String collectionName,  String staticDataPK){
-        List<Document> aggregateDocList = new ArrayList<Document>();
+        List<Document> aggregateDocList = new ArrayList<>();
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
         Document document = new Document();
         try {
@@ -68,9 +68,9 @@ public class StaticDataImpl implements StaticDataDAL {
 
     @Override
     public Document getRecord( boolean approved, String collectionName,  String staticDataPK){
-        List<Document> aggregateDocList = new ArrayList<Document>();
+        List<Document> aggregateDocList = new ArrayList<>();
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
         Document document = new Document();
         try {
@@ -93,16 +93,15 @@ public class StaticDataImpl implements StaticDataDAL {
 
     @Override
     public List<Document> getFiltered( boolean approved, String collectionName,  String filterJSONString){
-        List<Document> resultDocumentList = new ArrayList<Document>();
+        List<Document> resultDocumentList = new ArrayList<>();
 
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
-            Document filter = new Document();
-            filter = Document.parse(filterJSONString);
+            Document filter =Document.parse(filterJSONString);
             FindIterable<Document> resultDocument = collection.find(filter);
             for (Document d : resultDocument ){
                 d.remove("staticDataPK");
@@ -126,10 +125,10 @@ public class StaticDataImpl implements StaticDataDAL {
     public List<Document> getAll(boolean approved, String collectionName){
 
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
-        List<Document> resultDocumentList = new ArrayList<Document>();
+        List<Document> resultDocumentList = new ArrayList<>();
         try {
             MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
             FindIterable<Document> resultDocument = collection.find();
@@ -149,12 +148,11 @@ public class StaticDataImpl implements StaticDataDAL {
     @Override
     public  MongoCollection<Document> getAllAsReport(boolean approved, String collectionName) {
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
         try {
-            MongoCollection<Document> collection = mongoTemplate.getCollection(collectionName);
-            return  collection;
+            return  mongoTemplate.getCollection(collectionName);
         } catch (Exception e){
             logger.error(e.getMessage());
             return  null;
@@ -164,7 +162,7 @@ public class StaticDataImpl implements StaticDataDAL {
     @Override
     public Document getSpecificRecord(boolean approved, String collectionName, String staticDataPK) {
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
         Document document = new Document();
@@ -186,7 +184,7 @@ public class StaticDataImpl implements StaticDataDAL {
     @Override
     public List<Document> getAllActive(boolean approved, String collectionName) {
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
         List<Document> resultDocumentList = new ArrayList<>();
@@ -211,7 +209,7 @@ public class StaticDataImpl implements StaticDataDAL {
     public long getCount(boolean approved, String collectionName) {
         long counter = 0 ;
         if (!approved){
-            collectionName = collectionName.concat("_unapproved");
+            collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
         }
 
 
@@ -232,7 +230,7 @@ public class StaticDataImpl implements StaticDataDAL {
             //Insert New Unapproved
             Document document1 = Document.parse(content);
             document1.append("staticDataPK",staticDataPK);
-            document = mongoTemplate.insert(document1,collectionName.concat("_unapproved"));
+            document = mongoTemplate.insert(document1,collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e){
@@ -247,7 +245,7 @@ public class StaticDataImpl implements StaticDataDAL {
             //First Remove Old
             Query query = new Query();
             query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
-            mongoTemplate.remove(query,collectionName.concat("_unapproved"));
+            mongoTemplate.remove(query,collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             //Insert New Approved Record
             Document document1 = Document.parse(content);
             document1.append("staticDataPK",staticDataPK);
@@ -267,7 +265,7 @@ public class StaticDataImpl implements StaticDataDAL {
             //First Remove Old
             Query query = new Query();
             query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
-            mongoTemplate.remove(query,collectionName.concat("_unapproved"));
+            mongoTemplate.remove(query,collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             //Create New
             Document document1 = Document.parse(content);
             document1.append("staticDataPK",staticDataPK);
@@ -287,7 +285,7 @@ public class StaticDataImpl implements StaticDataDAL {
             //First Remove Old Unapproved
             Query query = new Query();
             query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
-            mongoTemplate.remove(query,collectionName.concat("_unapproved"));
+            mongoTemplate.remove(query,collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             //Removed Old Approved
             //First Remove Old Unapproved
             Query query1 = new Query();
@@ -313,7 +311,7 @@ public class StaticDataImpl implements StaticDataDAL {
         try {
             Query query = new Query();
             query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
-            DeleteResult result = mongoTemplate.remove(query,collectionName.concat("_unapproved"));
+            DeleteResult result = mongoTemplate.remove(query,collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             returnValue = result.wasAcknowledged();
         } catch (Exception e){
             logger.error(e.getMessage());
@@ -327,11 +325,11 @@ public class StaticDataImpl implements StaticDataDAL {
             //First Remove Old
             Query query = new Query();
             query.addCriteria(Criteria.where("staticDataPK").is(staticDataPK));
-            mongoTemplate.remove(query, collectionName.concat("_unapproved"));
+            mongoTemplate.remove(query, collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             //Create New Unapproved.
             Document document1 = Document.parse(content);
             document1.append("staticDataPK", staticDataPK);
-            document = mongoTemplate.insert(document1, collectionName.concat("_unapproved"));
+            document = mongoTemplate.insert(document1, collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION));
             document.remove("staticDataPK");
             document.remove("_id");
         } catch (Exception e) {
@@ -357,12 +355,12 @@ public class StaticDataImpl implements StaticDataDAL {
 
     @Override
     public List<Object> getAll(boolean approved, String functionId, Query query) {
-        List<Object> objectList = new ArrayList<Object>();
+        List<Object> objectList = new ArrayList<>();
         try {
             StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
             String collectionName = staticDataFactory.getCollectionName();
             if (!approved) {
-                collectionName = collectionName.concat("_unapproved");
+                collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
             }
             objectList = mongoTemplate.find(query,Object.class,collectionName);
         } catch (Exception e) {
@@ -379,7 +377,7 @@ public class StaticDataImpl implements StaticDataDAL {
             StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
             String collectionName = staticDataFactory.getCollectionName();
             if (!approved) {
-                collectionName = collectionName.concat("_unapproved");
+                collectionName = collectionName.concat(SystemFieldConfig.UNAPPROVEDCOLLECTION);
             }
             Stream<?> streamList = mongoTemplate.find(query,staticDataFactory.getClass(),collectionName).stream().skip(pageInfo.getPage()).limit(pageInfo.getSize());
             objectList = streamList.collect(Collectors.toList());
@@ -408,20 +406,16 @@ public class StaticDataImpl implements StaticDataDAL {
 
     @Override
     public StaticDataMetaInfoDB getMetaData(String staticDataPK, String collectionName) {
-        StaticDataMetaInfoDB staticDataMetaInfoDB = staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataPK,collectionName);
-        return staticDataMetaInfoDB;
+        return staticDataMetaInfoDBRepository.findFirstByStaticDataPKAndCollectionName(staticDataPK,collectionName);
     }
 
     @Override
     public StaticDataAuditDB saveAuditData(String staticDataPK, String functionId, String collectionName,String content, StaticDataMetaInfoDB staticDataMetaInfoDB) {
         String action = staticDataMetaInfoDB.getLastAudit().getAction();
         StaticDataAuditDB staticDataAuditDB = null;
-        String oldContent="";
+        String oldContent="";//Default for New
         String newContent=content;//Always current content is new content
         switch (action.toUpperCase()){
-            case SystemFieldConfig.ACTIONNEW:
-                newContent = content;//For New Old Content is empty;
-                break;
             case SystemFieldConfig.ACTIONEDIT:
             case SystemFieldConfig.ACTIONAPPROVE:
             case SystemFieldConfig.ACTIONDELETE:
@@ -440,10 +434,11 @@ public class StaticDataImpl implements StaticDataDAL {
                     newContent="";//For delete scenarios
                 }
                 break;
+            default:
+                break;
         }
         StaticDataAuditDB staticDataAuditDB1 = new StaticDataAuditDB(functionId,oldContent,newContent,staticDataMetaInfoDB.getVersion());
-        StaticDataAuditDB staticDataAuditDB2 = this.staticDataAuditDBRepository.save(staticDataAuditDB1);
-        return  staticDataAuditDB2;
+        return this.staticDataAuditDBRepository.save(staticDataAuditDB1);
 
     }
 

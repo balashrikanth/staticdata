@@ -107,8 +107,7 @@ public class Currency extends StaticData {
     @Override
     @JsonIgnore
     public String[] getLabels(){
-        String [] stringList = new String[]{isocodetag,fullnametag,displaynametag,"amountprecision","rateprecision","homecountries[]","intermediaries[]","spotdays","secondstoaccept","active"};
-        return stringList;
+        return new String[]{isocodetag,fullnametag,displaynametag,"amountprecision","rateprecision","homecountries[]","intermediaries[]","spotdays","secondstoaccept","active"};
     }
 
 

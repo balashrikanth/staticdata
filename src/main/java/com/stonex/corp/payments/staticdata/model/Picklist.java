@@ -16,12 +16,12 @@ public class Picklist {
     public Picklist(){
         this.noOfCols = SystemFieldConfig.PICKLISTCOLS;
         this.pickListHeaders = new String[SystemFieldConfig.PICKLISTCOLS];
-        this.pickListRowList = new ArrayList<String[]>();
+        this.pickListRowList = new ArrayList<>();
     }
     public Picklist(int noOfCols, String[] headerCols) {
         this.noOfCols = noOfCols;
         this.pickListHeaders = headerCols;
-        this.pickListRowList = new ArrayList<String[]>();
+        this.pickListRowList = new ArrayList<>();
     }
 
     public void addRows(List<String[]> pickListRowList){

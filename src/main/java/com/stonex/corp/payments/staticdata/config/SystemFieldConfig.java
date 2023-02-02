@@ -6,6 +6,9 @@ public class SystemFieldConfig {
     //Class Info
     public static final String BASECLASS="com.stonex.corp.payments.staticdata";
 
+    //Mongo collection extension for unapproved
+    public static final String UNAPPROVEDCOLLECTION="_unapproved";
+
     //Status Info
     public static final String ACTIONNEW="NEW";
     public static final String ACTIONEDIT="EDIT";

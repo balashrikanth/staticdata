@@ -45,6 +45,7 @@ public class DetailInfoController {
 
     @PostMapping("/new")
     public String createNew(@RequestHeader("functionId") String functionId,  @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+        logger.debug("POST API Create New");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -87,6 +88,7 @@ public class DetailInfoController {
 
     @PostMapping("editableRecord")
     public String getEditable(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestBody String jsonContent){
+        logger.debug("POST API Get Editable");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -94,7 +96,6 @@ public class DetailInfoController {
             return appReturnObject.setReturnJSON();
         }
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId,jsonContent);
-        jsonContent=staticDataFactory.getContent();
         if (staticDataFactory.getStaticData()==null){
             appError = incorrectStructure(functionId);
             appReturnObject.addError(appError);
@@ -118,6 +119,7 @@ public class DetailInfoController {
 
     @PostMapping("/edit")
     public String edit( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
+        logger.debug("POST API Edit");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -155,6 +157,7 @@ public class DetailInfoController {
     //Delete Unapproved is like Undo
     @PostMapping("/undo")
     public String delete( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language,@RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
+        logger.debug("POST API Undo");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -188,6 +191,7 @@ public class DetailInfoController {
     //Delete Approved - creates a new unapproved and it is pending approval
     @PostMapping("/delete")
     public String deleteApproved( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId,@RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader(value = "language", defaultValue = "en") String language,@RequestHeader(value = "version", defaultValue = "1") int version, @RequestBody String jsonContent){
+        logger.debug("POST API Delete");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){
@@ -220,6 +224,7 @@ public class DetailInfoController {
 
     @PostMapping("/approve")
     public String approve(@RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestHeader("remark") String approveRemark, @RequestHeader(value = "language", defaultValue = "en") String language, @RequestHeader(value = "version", defaultValue = "1") int version,@RequestBody String jsonContent){
+        logger.debug("POST API Approve");
         AppReturnObject appReturnObject = new AppReturnObject();
         AppError appError = isValidPayload(jsonContent,functionId);
         if (appError!=null){

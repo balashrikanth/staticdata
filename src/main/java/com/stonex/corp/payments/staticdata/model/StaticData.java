@@ -37,9 +37,7 @@ public class StaticData {
 
     public StaticData getObjectFromDocument(Document document){
         // Skeleton class for signature to override in individual domain classes
-        StaticData staticData = new StaticData();
-
-        return staticData;
+            return new StaticData();
     }
 
     @JsonIgnore
@@ -59,7 +57,7 @@ public class StaticData {
 
     @JsonIgnore
     public List<Document> getReportData(MongoCollection<Document> collection){
-        return new ArrayList<>();
+        return new ArrayList<Document>();
     }
 
 

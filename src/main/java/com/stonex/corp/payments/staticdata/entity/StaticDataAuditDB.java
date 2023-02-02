@@ -121,6 +121,7 @@ public class StaticDataAuditDB {
                             String splitlabel = labelSets[i].split("\\[")[0];
                             returnValue = gsonJsonObject.getAsJsonArray(splitlabel).toString();
                         } else {
+                            //for future use the partial object value to create recursion
                             partialobject = gsonJsonObject.getAsJsonObject(labelSets[i]);
                         }
                     }

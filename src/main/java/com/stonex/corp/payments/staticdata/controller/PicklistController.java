@@ -33,6 +33,7 @@ public class PicklistController {
 
     @GetMapping("/all")
     public String getAllList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId){
+        logger.debug("GET API All");
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
@@ -46,6 +47,7 @@ public class PicklistController {
 
     @GetMapping("/specific/function/{functionid}/recordkey/{recordkey}")
     public String getSpecificItemByFunctionAndKey( @PathVariable("functionid") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @PathVariable("recordkey") String recordkey){
+        logger.debug("GET API Specific Record Key");
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
@@ -58,13 +60,14 @@ public class PicklistController {
     }
 
     @GetMapping("/template/keytype/{keytype}")
-    public String getNotificationKeys(@PathVariable("keytype") String keytype){
+    public String getTemplateKeys(@PathVariable("keytype") String keytype){
+        logger.debug("GET API Template Keys");
         AppReturnObject appReturnObject = new AppReturnObject();
         List<TemplateDB> templateDBList = templateDBRepository.findAllByTemplatetypeAndActive(keytype,true);
         if (!templateDBList.isEmpty()){
             Picklist picklist = new Picklist();
             picklist.setNoOfCols(1);
-            picklist.setPickListHeaders(new String[]{"Allowed Keys"});;
+            picklist.setPickListHeaders(new String[]{"Allowed Keys"});
             for (TemplateDB templateDB : templateDBList){
                 if (templateDB.getKey()!=null){
                     picklist.addSingleRow(new String[]{templateDB.getKey()});
@@ -77,6 +80,7 @@ public class PicklistController {
 
     @PostMapping("/filtered")
     public String getFilteredList( @RequestHeader("functionId") String functionId, @RequestHeader(value = "applicationId", defaultValue = "STATICDATA") String applicationId, @RequestHeader(value = "userid", defaultValue = SystemFieldConfig.SYSTEMUSER) String userId, @RequestBody String jsonContent){
+        logger.debug("POST API Get Filtered");
         AppReturnObject appReturnObject = new AppReturnObject();
         StaticDataFactory staticDataFactory = new StaticDataFactory(functionId);
         //get all Approved
