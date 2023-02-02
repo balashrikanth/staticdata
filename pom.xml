@@ -17,6 +17,7 @@
     <properties>
         <java.version>11</java.version>
         <odata.version>4.6.0</odata.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
     </properties>
     <dependencies>
         <dependency>
